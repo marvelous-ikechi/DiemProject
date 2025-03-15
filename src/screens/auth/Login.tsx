@@ -1,6 +1,8 @@
 import React, {FunctionComponent} from 'react';
 
+import {AuthStackParamList} from '@src/navigation/types/AuthStackParamList';
 import GoogleIcon from 'src/assets/Icons/GoogleIcon';
+import type {NativeStackScreenProps} from '@react-navigation/native-stack';
 import ScreenWrapper from 'src/components/container/ScreenWrapper';
 import {StyleSheet} from 'react-native';
 import SubmitButton from 'src/components/ui/Button/SubmitButton';
@@ -9,7 +11,9 @@ import TextInput from 'src/components/ui/Text/TextInput';
 import View from 'src/components/ui/View/View';
 import {size} from 'src/utils/size';
 
-const Login: FunctionComponent = () => {
+type Props = NativeStackScreenProps<AuthStackParamList, 'Login'>;
+
+const Login: FunctionComponent<Props> = ({navigation}) => {
   return (
     <ScreenWrapper>
       <Text bold size={size.XL}>
@@ -24,7 +28,11 @@ const Login: FunctionComponent = () => {
         <SubmitButton text="Login" onPress={() => {}} textColor="secondary" />
         <SubmitButton
           text="Sign up with google"
-          onPress={() => {}}
+          onPress={() =>
+            navigation.navigate('BottomTab', {
+              screen: 'Home',
+            })
+          }
           textColor="secondary"
           backgroundColor="secondary"
           leftIcon={<GoogleIcon style={styles.iconStyle} />}
