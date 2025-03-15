@@ -1,8 +1,10 @@
+import './gesture-handler';
+
 import {StatusBar, View, useColorScheme} from 'react-native';
 
 import {Colors} from 'react-native/Libraries/NewAppScreen';
-import Login from 'src/screens/auth/Login';
 import React from 'react';
+import RootNavigator from 'src/navigation/RootNavigator';
 
 function App(): React.JSX.Element {
   const isDarkMode = useColorScheme() === 'dark';
@@ -18,7 +20,7 @@ function App(): React.JSX.Element {
         barStyle={isDarkMode ? 'light-content' : 'dark-content'}
         backgroundColor={backgroundStyle.backgroundColor}
       />
-      <Login />
+      <RootNavigator />
     </View>
   );
 }
