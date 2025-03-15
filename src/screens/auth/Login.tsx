@@ -10,10 +10,13 @@ import Text from 'src/components/ui/Text/Text';
 import TextInput from 'src/components/ui/Text/TextInput';
 import View from 'src/components/ui/View/View';
 import {size} from 'src/utils/size';
+import useSignIn from 'src/hooks/useSignIn';
 
 type Props = NativeStackScreenProps<AuthStackParamList, 'Login'>;
 
 const Login: FunctionComponent<Props> = ({navigation}) => {
+  const {googleSignIn} = useSignIn();
+
   return (
     <ScreenWrapper>
       <Text bold size={size.XL}>
@@ -28,11 +31,7 @@ const Login: FunctionComponent<Props> = ({navigation}) => {
         <SubmitButton text="Login" onPress={() => {}} textColor="secondary" />
         <SubmitButton
           text="Sign up with google"
-          onPress={() =>
-            navigation.navigate('BottomTab', {
-              screen: 'Home',
-            })
-          }
+          onPress={googleSignIn}
           textColor="secondary"
           backgroundColor="secondary"
           leftIcon={<GoogleIcon style={styles.iconStyle} />}
