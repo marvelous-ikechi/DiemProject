@@ -1,53 +1,77 @@
 import {IOS_CLIENT_ID, WEB_CLIENT_ID} from '@env';
 import {NavigationProp, useNavigation} from '@react-navigation/native';
+import {useEffect, useState} from 'react';
 
 import {AuthStackParamList} from '@src/navigation/types/AuthStackParamList';
 import {GoogleSignin} from '@react-native-google-signin/google-signin';
-import {useEffect} from 'react';
+import auth from '@react-native-firebase/auth';
 
 const useSignIn = () => {
   const navigation = useNavigation<NavigationProp<AuthStackParamList>>();
+  const [isGoogleSignInLoading, setIsGoogleSignInLoading] =
+    useState<boolean>(false);
+  const [isEmailAndPasswordSignInLoading, setIsEmailAndPasswordSignInLoading] =
+    useState<boolean>(false);
 
   useEffect(() => {
     GoogleSignin.configure({
-      webClientId: WEB_CLIENT_ID, // client ID of type WEB for your server. Required to get the `idToken` on the user object, and for offline access.
-      scopes: ['https://www.googleapis.com/auth/drive.readonly'], // what API you want to access on behalf of the user, default is email and profile
-      offlineAccess: true, // if you want to access Google API on behalf of the user FROM YOUR SERVER
-      hostedDomain: '', // specifies a hosted domain restriction
-      forceCodeForRefreshToken: false, // [Android] related to `serverAuthCode`, read the docs link below *.
-      accountName: '', // [Android] specifies an account name on the device that should be used
+      webClientId: WEB_CLIENT_ID,
       iosClientId: IOS_CLIENT_ID,
-      googleServicePlistPath: '', // [iOS] if you renamed your GoogleService-Info file, new name here, e.g. "GoogleService-Info-Staging"
-      openIdRealm: '', // [iOS] The OpenID2 realm of the home web server. This allows Google to include the user's OpenID Identifier in the OpenID Connect ID token.
-      profileImageSize: 120, // [iOS] The desired height (and width) of the profile image. Defaults to 120px
     });
     GoogleSignin.signInSilently().catch(() => null);
   }, []);
 
   const googleSignIn = async () => {
+    setIsGoogleSignInLoading(true);
     try {
-      const hasPlayServices = await GoogleSignin.hasPlayServices({
-        showPlayServicesUpdateDialog: true,
-      });
-      if (!hasPlayServices) {
-        console.error('Google Play Services not available.');
-        return;
-      }
-
+      await GoogleSignin.hasPlayServices();
       const response = await GoogleSignin.signIn();
-      if (response.type === 'success') {
-        navigation.navigate('BottomTab', {
-          screen: 'Home',
-        });
-      }
       console.log(response);
+
+      navigation.navigate('BottomTab', {screen: 'Home'});
     } catch (error) {
       console.error('Google Sign-In Error:', error);
+    } finally {
+      setIsGoogleSignInLoading(false);
+    }
+  };
+
+  const signInOrSignUpWithEmailAndPassword = async (
+    email: string,
+    password: string,
+  ) => {
+    setIsEmailAndPasswordSignInLoading(true);
+    try {
+      await auth().createUserWithEmailAndPassword(email, password);
+      // Navigate only if sign-in is successful
+      navigation.navigate('BottomTab', {screen: 'Home'});
+    } catch (error: any) {
+      // If email is already registered, try signin in.
+      if (error.code === 'auth/email-already-in-use') {
+        try {
+          const userCredential = await auth().signInWithEmailAndPassword(
+            email,
+            password,
+          );
+          console.log('User signed up:', userCredential.user);
+          // Navigate only if sign-up is successful
+          navigation.navigate('BottomTab', {screen: 'Home'});
+        } catch (signUpError: any) {
+          console.error('Signup Error:', signUpError.code);
+        }
+      } else {
+        console.error('Firebase Auth Error:', error.code);
+      }
+    } finally {
+      setIsEmailAndPasswordSignInLoading(false);
     }
   };
 
   return {
     googleSignIn,
+    signInOrSignUpWithEmailAndPassword,
+    isGoogleSignInLoading,
+    isEmailAndPasswordSignInLoading,
   };
 };
 
