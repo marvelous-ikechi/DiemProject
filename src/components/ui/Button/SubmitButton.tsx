@@ -32,6 +32,7 @@ const SubmitButton: React.FC<Props> = ({
   rightIcon,
   isLoading = false,
   disabled,
+  style,
   ...props
 }) => {
   const buttonStyle = useMemo(
@@ -47,7 +48,7 @@ const SubmitButton: React.FC<Props> = ({
 
   return (
     <TouchableOpacity
-      style={buttonStyle}
+      style={[buttonStyle, style]}
       onPress={onPress}
       disabled={isLoading}
       activeOpacity={0.7}
