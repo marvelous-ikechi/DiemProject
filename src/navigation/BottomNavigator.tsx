@@ -39,6 +39,7 @@ const BottomTab = () => {
           alignItems: 'center',
           justifyContent: 'space-between',
           paddingVertical: 20,
+          marginTop: 20,
         },
         tabBarLabelStyle: {
           color: 'white',
