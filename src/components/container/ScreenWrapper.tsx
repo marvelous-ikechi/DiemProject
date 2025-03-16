@@ -1,5 +1,5 @@
+import {Platform, SafeAreaView, StyleSheet} from 'react-native';
 import React, {FunctionComponent, ReactNode} from 'react';
-import {SafeAreaView, StyleSheet} from 'react-native';
 
 import View from '../ui/View/View';
 
@@ -24,6 +24,7 @@ const styles = StyleSheet.create({
   },
   container: {
     paddingHorizontal: 20,
+    marginTop: Platform.OS === 'ios' ? 0 : 15,
     flex: 1,
   },
   center: {
