@@ -13,7 +13,7 @@ import Text from 'src/components/ui/Text/Text';
 import TextInput from 'src/components/ui/Text/TextInput';
 import View from 'src/components/ui/View/View';
 import {size} from 'src/utils/size';
-import useSignIn from 'src/hooks/useSignIn';
+import useAuth from 'src/hooks/useAuth';
 import {yupResolver} from '@hookform/resolvers/yup';
 
 type Props = NativeStackScreenProps<AuthStackParamList, 'Login'>;
@@ -28,7 +28,7 @@ const Login: FunctionComponent<Props> = () => {
     signInOrSignUpWithEmailAndPassword,
     isEmailAndPasswordSignInLoading,
     isGoogleSignInLoading,
-  } = useSignIn();
+  } = useAuth();
 
   const authSchema = yup.object().shape({
     email: yup
@@ -99,6 +99,7 @@ const Login: FunctionComponent<Props> = () => {
           text="Login"
           onPress={handleSubmit(onSubmit)}
           textColor="secondary"
+          backgroundColor="blue"
           isLoading={isEmailAndPasswordSignInLoading}
           disabled={!isValid}
         />
@@ -106,7 +107,7 @@ const Login: FunctionComponent<Props> = () => {
           text="Sign up with google"
           onPress={googleSignIn}
           textColor="secondary"
-          backgroundColor="secondary"
+          backgroundColor="primary"
           leftIcon={<GoogleIcon style={styles.iconStyle} />}
           isLoading={isGoogleSignInLoading}
         />
