@@ -6,15 +6,18 @@ import {
   StyleSheet,
   TouchableOpacity,
 } from 'react-native';
+import {CirclePlus, Settings, UsersRound} from 'lucide-react-native';
 import React, {FunctionComponent} from 'react';
 
 import {AppStackParamList} from '@src/navigation/types/AppStackParamList';
 import ScreenWrapper from 'src/components/container/ScreenWrapper';
 import {StackNavigationProp} from '@react-navigation/stack';
+import SubmitButton from 'src/components/ui/Button/SubmitButton';
 import Text from 'src/components/ui/Text/Text';
 import View from 'src/components/ui/View/View';
 import {apiClient} from 'src/api/apiClient';
 import {colors} from 'src/utils/colors';
+import {size} from 'src/utils/size';
 import {useInfiniteQuery} from '@tanstack/react-query';
 import {useNavigation} from '@react-navigation/native';
 
@@ -54,6 +57,38 @@ const HomeScreen: FunctionComponent = () => {
           />
           <Text>{item.name}</Text>
         </View>
+        <View row style={styles.buttonContainer}>
+          <SubmitButton
+            text="Catch Pokemon"
+            onPress={() =>
+              navigation.navigate('PokemonDetails', {pokemon: item})
+            }
+            textColor="secondary"
+            style={styles.button}
+            textSize={size.XS}
+            rightIcon={<CirclePlus color={colors.secondary} />}
+          />
+          <SubmitButton
+            text="Settings"
+            onPress={() =>
+              navigation.navigate('PokemonDetails', {pokemon: item})
+            }
+            textColor="secondary"
+            style={styles.button}
+            textSize={size.XS}
+            rightIcon={<Settings color={colors.secondary} />}
+          />
+          <SubmitButton
+            text="View Team"
+            onPress={() =>
+              navigation.navigate('PokemonDetails', {pokemon: item})
+            }
+            textColor="secondary"
+            style={styles.button}
+            textSize={size.XS}
+            rightIcon={<UsersRound color={colors.secondary} />}
+          />
+        </View>
       </TouchableOpacity>
     );
   };
@@ -76,6 +111,7 @@ const HomeScreen: FunctionComponent = () => {
             <ActivityIndicator size="small" color={colors.blue} />
           ) : null
         }
+        showsVerticalScrollIndicator={false}
       />
     </ScreenWrapper>
   );
@@ -89,6 +125,14 @@ const styles = StyleSheet.create({
   itemContainer: {
     alignItems: 'center',
     padding: 10,
+    marginBottom: 10,
+  },
+  button: {
+    width: 120,
+    backgroundColor: colors.blue,
+  },
+  buttonContainer: {
+    gap: 10,
   },
 });
 
