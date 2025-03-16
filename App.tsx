@@ -1,4 +1,5 @@
 import './gesture-handler';
+import 'src/services/firebase';
 
 import {StatusBar, View, useColorScheme} from 'react-native';
 

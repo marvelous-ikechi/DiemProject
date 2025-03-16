@@ -1,9 +1,14 @@
-import React, {ReactNode} from 'react';
-import {StyleSheet, TouchableOpacity} from 'react-native';
+import {
+  ActivityIndicator,
+  StyleSheet,
+  TouchableOpacity,
+  TouchableOpacityProps,
+} from 'react-native';
+import React, {ReactNode, useMemo} from 'react';
 
 import Text from '../Text/Text';
 
-interface Props {
+interface Props extends TouchableOpacityProps {
   text: string;
   onPress: () => void;
   backgroundColor?: 'primary' | 'secondary';
@@ -11,32 +16,56 @@ interface Props {
   textSize?: number;
   leftIcon?: ReactNode;
   rightIcon?: ReactNode;
+  isLoading?: boolean;
 }
 
 const COLORS = {
   primary: 'blue',
   secondary: 'black',
+  disabled: 'grey',
 };
 
 const SubmitButton: React.FC<Props> = ({
   text,
   onPress,
   backgroundColor = 'primary',
-  textColor,
+  textColor = 'primary',
   textSize,
   leftIcon,
   rightIcon,
+  isLoading = false,
+  disabled,
+  ...props
 }) => {
+  const buttonStyle = useMemo(
+    () => [
+      styles.button,
+      {
+        backgroundColor:
+          COLORS[isLoading || disabled ? 'disabled' : backgroundColor],
+      },
+    ],
+    [backgroundColor, isLoading, disabled],
+  );
+
   return (
     <TouchableOpacity
-      style={[styles.button, {backgroundColor: COLORS[backgroundColor]}]}
+      style={buttonStyle}
       onPress={onPress}
-      activeOpacity={0.7}>
-      {leftIcon}
-      <Text color={textColor} size={textSize}>
-        {text}
-      </Text>
-      {rightIcon}
+      disabled={isLoading}
+      activeOpacity={0.7}
+      {...props}>
+      {isLoading ? (
+        <ActivityIndicator color="white" />
+      ) : (
+        <>
+          {leftIcon}
+          <Text color={textColor ?? 'white'} size={textSize}>
+            {text}
+          </Text>
+          {rightIcon}
+        </>
+      )}
     </TouchableOpacity>
   );
 };

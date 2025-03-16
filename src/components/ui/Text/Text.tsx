@@ -7,7 +7,7 @@ interface Props extends TextProps {
   bold?: boolean;
   medium?: boolean;
   size?: number;
-  color?: 'primary' | 'secondary';
+  color?: 'primary' | 'secondary' | 'danger';
 }
 
 const Text: React.FC<Props> = ({
@@ -35,6 +35,11 @@ const Text: React.FC<Props> = ({
     case 'secondary':
       textColor = 'white';
       break;
+    case 'danger':
+      textColor = 'red';
+      break;
+    default:
+      textColor = 'black';
   }
 
   return (
