@@ -20,6 +20,7 @@
 		81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */; };
 		8B30BC3C432C4B44AA6DCAE0 /* Figtree-BoldItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = D1733FA7792F4D1A9CE3015E /* Figtree-BoldItalic.ttf */; };
 		9C70EFDC36FA457995598E0E /* Figtree-Black.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 74CB796303C94E11A335A6F6 /* Figtree-Black.ttf */; };
+		A5637BD72D861C6000A1FADA /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = A5637BD62D861C6000A1FADA /* GoogleService-Info.plist */; };
 		A96A5B39CF0D4647A950ED70 /* Figtree-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = DE36E74CAD9943A9AE31B154 /* Figtree-Bold.ttf */; };
 		AA95B92A9D3342018572E101 /* Figtree-BlackItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = D63E25AB59254AAA800012D4 /* Figtree-BlackItalic.ttf */; };
 		CFD68B8CA7C14E64837E2277 /* Figtree-Italic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 60C137A5AE424B528894C4F9 /* Figtree-Italic.ttf */; };
@@ -46,6 +47,8 @@
 		78C10D3C9F0547AB8D0AD947 /* Figtree-Medium.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Figtree-Medium.ttf"; path = "../assets/fonts/Figtree-Medium.ttf"; sourceTree = "<group>"; };
 		81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = LaunchScreen.storyboard; path = DiemProject/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		9C2CD76BC31C4008B06ACB17 /* Figtree-Light.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Figtree-Light.ttf"; path = "../assets/fonts/Figtree-Light.ttf"; sourceTree = "<group>"; };
+		A5637BD62D861C6000A1FADA /* GoogleService-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
+		A5637BD92D861CBD00A1FADA /* GoogleService-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		CB50632BDF54445396AC57FB /* Figtree-Regular.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Figtree-Regular.ttf"; path = "../assets/fonts/Figtree-Regular.ttf"; sourceTree = "<group>"; };
 		D1733FA7792F4D1A9CE3015E /* Figtree-BoldItalic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Figtree-BoldItalic.ttf"; path = "../assets/fonts/Figtree-BoldItalic.ttf"; sourceTree = "<group>"; };
 		D63E25AB59254AAA800012D4 /* Figtree-BlackItalic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Figtree-BlackItalic.ttf"; path = "../assets/fonts/Figtree-BlackItalic.ttf"; sourceTree = "<group>"; };
@@ -119,6 +122,8 @@
 		83CBB9F61A601CBA00E9B192 = {
 			isa = PBXGroup;
 			children = (
+				A5637BD62D861C6000A1FADA /* GoogleService-Info.plist */,
+				A5637BD92D861CBD00A1FADA /* GoogleService-Info.plist */,
 				13B07FAE1A68108700A75B9A /* DiemProject */,
 				832341AE1AAA6A7D00B99B32 /* Libraries */,
 				83CBBA001A601CBA00E9B192 /* Products */,
@@ -210,6 +215,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A5637BD72D861C6000A1FADA /* GoogleService-Info.plist in Resources */,
 				81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */,
 				13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */,
 				1FE20E7AE14A70C8583E8BC0 /* PrivacyInfo.xcprivacy in Resources */,
@@ -475,10 +481,7 @@
 					"-DFOLLY_CFG_NO_COROUTINES=1",
 					"-DFOLLY_HAVE_CLOCK_GETTIME=1",
 				);
-				OTHER_LDFLAGS = (
-					"$(inherited)",
-					" ",
-				);
+				OTHER_LDFLAGS = "$(inherited)  ";
 				REACT_NATIVE_PATH = "${PODS_ROOT}/../../node_modules/react-native";
 				SDKROOT = iphoneos;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) DEBUG";
@@ -559,10 +562,7 @@
 					"-DFOLLY_CFG_NO_COROUTINES=1",
 					"-DFOLLY_HAVE_CLOCK_GETTIME=1",
 				);
-				OTHER_LDFLAGS = (
-					"$(inherited)",
-					" ",
-				);
+				OTHER_LDFLAGS = "$(inherited)  ";
 				REACT_NATIVE_PATH = "${PODS_ROOT}/../../node_modules/react-native";
 				SDKROOT = iphoneos;
 				SWIFT_COMPILATION_MODE = wholemodule;
