@@ -1,4 +1,7 @@
-import React, {FunctionComponent, useState} from 'react';
+import * as yup from 'yup';
+
+import {Controller, SubmitHandler, useForm} from 'react-hook-form';
+import React, {FunctionComponent} from 'react';
 
 import {AuthStackParamList} from '@src/navigation/types/AuthStackParamList';
 import GoogleIcon from 'src/assets/Icons/GoogleIcon';
@@ -11,19 +14,49 @@ import TextInput from 'src/components/ui/Text/TextInput';
 import View from 'src/components/ui/View/View';
 import {size} from 'src/utils/size';
 import useSignIn from 'src/hooks/useSignIn';
+import {yupResolver} from '@hookform/resolvers/yup';
 
 type Props = NativeStackScreenProps<AuthStackParamList, 'Login'>;
+type Inputs = {
+  email: string;
+  password: string;
+};
 
 const Login: FunctionComponent<Props> = () => {
-  const [email, setEmail] = useState<string>('');
-  const [password, setPassword] = useState<string>('');
-
   const {
     googleSignIn,
     signInOrSignUpWithEmailAndPassword,
     isEmailAndPasswordSignInLoading,
     isGoogleSignInLoading,
   } = useSignIn();
+
+  const authSchema = yup.object().shape({
+    email: yup
+      .string()
+      .email('Enter a valid email address')
+      .required('Email is required'),
+    password: yup
+      .string()
+      .min(6, 'Password must be at least 6 characters')
+      .max(100, 'Password cannot exceed 100 characters')
+      .required('Password is required'),
+  });
+
+  const {
+    handleSubmit,
+    control,
+    formState: {errors, isValid},
+  } = useForm<Inputs>({
+    resolver: yupResolver(authSchema),
+    defaultValues: {
+      email: '',
+      password: '',
+    },
+  });
+  const onSubmit: SubmitHandler<Inputs> = data => {
+    console.log(data);
+    signInOrSignUpWithEmailAndPassword(data?.email, data?.password);
+  };
 
   return (
     <ScreenWrapper>
@@ -34,21 +67,40 @@ const Login: FunctionComponent<Props> = () => {
         Welcome back
       </Text>
       <View style={styles.inputFieldsContainer}>
-        <TextInput
-          label="Email Address"
-          value={email}
-          onChangeText={setEmail}
+        <Controller
+          control={control}
+          render={({field: {onChange, onBlur, value}}) => (
+            <TextInput
+              label="Email Address"
+              value={value}
+              onChangeText={onChange}
+              onBlur={onBlur}
+            />
+          )}
+          name="email"
         />
-        <TextInput
-          label="Password"
-          value={password}
-          onChangeText={setPassword}
+        {errors.email && <Text color="danger">{errors.email.message}</Text>}
+        <Controller
+          control={control}
+          render={({field: {onChange, onBlur, value}}) => (
+            <TextInput
+              label="Password"
+              value={value}
+              onChangeText={onChange}
+              onBlur={onBlur}
+            />
+          )}
+          name="password"
         />
+        {errors.password && (
+          <Text color="danger">{errors.password.message}</Text>
+        )}
         <SubmitButton
           text="Login"
-          onPress={() => signInOrSignUpWithEmailAndPassword(email, password)}
+          onPress={handleSubmit(onSubmit)}
           textColor="secondary"
           isLoading={isEmailAndPasswordSignInLoading}
+          disabled={!isValid}
         />
         <SubmitButton
           text="Sign up with google"
