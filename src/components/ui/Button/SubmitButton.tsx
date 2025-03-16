@@ -1,9 +1,14 @@
-import {ActivityIndicator, StyleSheet, TouchableOpacity} from 'react-native';
+import {
+  ActivityIndicator,
+  StyleSheet,
+  TouchableOpacity,
+  TouchableOpacityProps,
+} from 'react-native';
 import React, {ReactNode, useMemo} from 'react';
 
 import Text from '../Text/Text';
 
-interface Props {
+interface Props extends TouchableOpacityProps {
   text: string;
   onPress: () => void;
   backgroundColor?: 'primary' | 'secondary';
@@ -29,13 +34,18 @@ const SubmitButton: React.FC<Props> = ({
   leftIcon,
   rightIcon,
   isLoading = false,
+  disabled,
+  ...props
 }) => {
   const buttonStyle = useMemo(
     () => [
       styles.button,
-      {backgroundColor: COLORS[isLoading ? 'disabled' : backgroundColor]},
+      {
+        backgroundColor:
+          COLORS[isLoading || disabled ? 'disabled' : backgroundColor],
+      },
     ],
-    [backgroundColor, isLoading],
+    [backgroundColor, isLoading, disabled],
   );
 
   return (
@@ -43,7 +53,8 @@ const SubmitButton: React.FC<Props> = ({
       style={buttonStyle}
       onPress={onPress}
       disabled={isLoading}
-      activeOpacity={0.7}>
+      activeOpacity={0.7}
+      {...props}>
       {isLoading ? (
         <ActivityIndicator color="white" />
       ) : (
