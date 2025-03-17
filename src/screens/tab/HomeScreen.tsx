@@ -146,7 +146,11 @@ const HomeScreen: FunctionComponent = () => {
         ListEmptyComponent={<Text>No Pokémon found</Text>}
         ListFooterComponent={
           isFetchingNextPage ? (
-            <ActivityIndicator size="small" color={colors.blue} />
+            <ActivityIndicator
+              size="small"
+              style={styles.activityIndicator}
+              color={colors.blue}
+            />
           ) : null
         }
         showsVerticalScrollIndicator={false}
@@ -282,6 +286,9 @@ const styles = StyleSheet.create({
   modalText: {
     fontSize: 18,
     fontWeight: 'bold',
+  },
+  activityIndicator: {
+    marginTop: 40,
   },
 });
 
