@@ -45,7 +45,7 @@ const HomeScreen: FunctionComponent = () => {
   const [state, setState] = useState({
     selectedPokemon: null as any,
     activePokemon: null as any,
-    modalType: null as 'caught' | 'escaped' | 'alreadyCaught' | null,
+    modalType: null as PokemonModalType | null,
   });
 
   const {caughtPokemons, addCaughtPokemon, releasePokemon} = useStore();
