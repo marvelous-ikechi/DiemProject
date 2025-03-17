@@ -7,23 +7,20 @@ import {
 import React, {ReactNode, useMemo} from 'react';
 
 import Text from '../Text/Text';
+import {colors} from 'src/utils/colors';
+
+const COLORS = colors;
 
 interface Props extends TouchableOpacityProps {
   text: string;
   onPress: () => void;
-  backgroundColor?: 'primary' | 'secondary';
-  textColor?: 'primary' | 'secondary';
+  backgroundColor?: keyof typeof COLORS;
+  textColor?: keyof typeof COLORS;
   textSize?: number;
   leftIcon?: ReactNode;
   rightIcon?: ReactNode;
   isLoading?: boolean;
 }
-
-const COLORS = {
-  primary: 'blue',
-  secondary: 'black',
-  disabled: 'grey',
-};
 
 const SubmitButton: React.FC<Props> = ({
   text,
@@ -35,6 +32,7 @@ const SubmitButton: React.FC<Props> = ({
   rightIcon,
   isLoading = false,
   disabled,
+  style,
   ...props
 }) => {
   const buttonStyle = useMemo(
@@ -50,7 +48,7 @@ const SubmitButton: React.FC<Props> = ({
 
   return (
     <TouchableOpacity
-      style={buttonStyle}
+      style={[buttonStyle, style]}
       onPress={onPress}
       disabled={isLoading}
       activeOpacity={0.7}

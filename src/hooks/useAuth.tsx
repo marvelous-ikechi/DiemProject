@@ -4,14 +4,17 @@ import {useEffect, useState} from 'react';
 
 import {AuthStackParamList} from '@src/navigation/types/AuthStackParamList';
 import {GoogleSignin} from '@react-native-google-signin/google-signin';
+import {UserType} from 'src/types/appTypes';
 import auth from '@react-native-firebase/auth';
+import useStore from 'src/store/store';
 
-const useSignIn = () => {
+const useAuth = () => {
   const navigation = useNavigation<NavigationProp<AuthStackParamList>>();
   const [isGoogleSignInLoading, setIsGoogleSignInLoading] =
     useState<boolean>(false);
   const [isEmailAndPasswordSignInLoading, setIsEmailAndPasswordSignInLoading] =
     useState<boolean>(false);
+  const {addUser} = useStore();
 
   useEffect(() => {
     GoogleSignin.configure({
@@ -26,7 +29,7 @@ const useSignIn = () => {
     try {
       await GoogleSignin.hasPlayServices();
       const response = await GoogleSignin.signIn();
-      console.log(response);
+      addUser(response.data?.user as UserType);
 
       navigation.navigate('BottomTab', {screen: 'Home'});
     } catch (error) {
@@ -42,9 +45,13 @@ const useSignIn = () => {
   ) => {
     setIsEmailAndPasswordSignInLoading(true);
     try {
-      await auth().createUserWithEmailAndPassword(email, password);
+      const userCredential = await auth().createUserWithEmailAndPassword(
+        email,
+        password,
+      );
       // Navigate only if sign-in is successful
       navigation.navigate('BottomTab', {screen: 'Home'});
+      addUser(userCredential.user as unknown as UserType);
     } catch (error: any) {
       // If email is already registered, try signin in.
       if (error.code === 'auth/email-already-in-use') {
@@ -53,9 +60,9 @@ const useSignIn = () => {
             email,
             password,
           );
-          console.log('User signed up:', userCredential.user);
           // Navigate only if sign-up is successful
           navigation.navigate('BottomTab', {screen: 'Home'});
+          addUser(userCredential.user as unknown as UserType);
         } catch (signUpError: any) {
           console.error('Signup Error:', signUpError.code);
         }
@@ -75,4 +82,4 @@ const useSignIn = () => {
   };
 };
 
-export default useSignIn;
+export default useAuth;
