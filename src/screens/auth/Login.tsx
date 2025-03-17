@@ -54,7 +54,6 @@ const Login: FunctionComponent<Props> = () => {
     },
   });
   const onSubmit: SubmitHandler<Inputs> = data => {
-    console.log(data);
     signInOrSignUpWithEmailAndPassword(data?.email, data?.password);
   };
 

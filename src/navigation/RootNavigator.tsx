@@ -9,7 +9,6 @@ const Stack = createStackNavigator<RootStackParamList>();
 
 const RootNavigator = () => {
   const {user} = useStore();
-  console.log('user', user);
   return (
     <NavigationContainer>
       <Stack.Navigator screenOptions={{headerShown: false}}>

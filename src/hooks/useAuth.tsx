@@ -60,7 +60,6 @@ const useAuth = () => {
             email,
             password,
           );
-          console.log('User signed up:', userCredential.user);
           // Navigate only if sign-up is successful
           navigation.navigate('BottomTab', {screen: 'Home'});
           addUser(userCredential.user as unknown as UserType);

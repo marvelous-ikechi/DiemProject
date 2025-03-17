@@ -55,7 +55,6 @@ const BottomTab = () => {
         component={HomeScreen}
         listeners={({route}) => ({
           tabPress: () => {
-            console.log(`${route.name} tab was pressed`);
             setCurrentScreen(route.name);
           },
         })}

@@ -18,10 +18,6 @@ const CustomBottomSheet = ({
   sheetRef: React.RefObject<BottomSheetMethods | null>;
   onClose: () => void;
 }) => {
-  const handleSheetChange = useCallback((index: number) => {
-    console.log('handleSheetChange', index);
-  }, []);
-
   // Updated backdrop using Gorhom's `BottomSheetBackdrop`
   const renderBackdrop = useCallback(
     (props: any) => (
@@ -45,8 +41,7 @@ const CustomBottomSheet = ({
       onClose={onClose}
       backgroundStyle={styles.container}
       backdropComponent={renderBackdrop}
-      index={-1}
-      onChange={handleSheetChange}>
+      index={-1}>
       <BottomSheetView style={styles.contentContainer}>
         {children}
       </BottomSheetView>
