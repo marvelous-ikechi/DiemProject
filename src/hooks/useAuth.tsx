@@ -1,12 +1,9 @@
-import {
-  GoogleSignin,
-  SignInSuccessResponse,
-} from '@react-native-google-signin/google-signin';
 import {IOS_CLIENT_ID, WEB_CLIENT_ID} from '@env';
 import {NavigationProp, useNavigation} from '@react-navigation/native';
 import {useEffect, useState} from 'react';
 
 import {AuthStackParamList} from '@src/navigation/types/AuthStackParamList';
+import {GoogleSignin} from '@react-native-google-signin/google-signin';
 import {UserType} from 'src/types/appTypes';
 import auth from '@react-native-firebase/auth';
 import useStore from 'src/store/store';
