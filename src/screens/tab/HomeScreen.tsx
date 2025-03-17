@@ -1,20 +1,14 @@
 import {
   ActivityIndicator,
-  Alert,
   FlatList,
   Image,
   ListRenderItem,
   StyleSheet,
   TouchableOpacity,
 } from 'react-native';
-import {CirclePlus, Eye, Settings} from 'lucide-react-native';
-import React, {
-  FunctionComponent,
-  useCallback,
-  useMemo,
-  useRef,
-  useState,
-} from 'react';
+import {Button, Modal, Portal} from 'react-native-paper';
+import {CirclePlus, Eye} from 'lucide-react-native';
+import React, {FunctionComponent, useMemo, useRef, useState} from 'react';
 import {useInfiniteQuery, useQueryClient} from '@tanstack/react-query';
 
 import {AppStackParamList} from '@src/navigation/types/AppStackParamList';
@@ -27,21 +21,39 @@ import Text from 'src/components/ui/Text/Text';
 import View from 'src/components/ui/View/View';
 import {apiClient} from 'src/api/apiClient';
 import {colors} from 'src/utils/colors';
+import {getPokemonImage} from 'src/utils/pokemonUtils';
 import {size} from 'src/utils/size';
 import {useNavigation} from '@react-navigation/native';
 import useStore from 'src/store/store';
 
 type Props = StackNavigationProp<AppStackParamList, 'BottomTab'>;
+
+type PokemonModalType = 'caught' | 'escaped' | 'alreadyCaught';
+
+type PokemonModalProps = {
+  visible: boolean;
+  type: PokemonModalType | null;
+  pokemon: any;
+  onClose: () => void;
+};
+
 const HomeScreen: FunctionComponent = () => {
   const navigation = useNavigation<Props>();
-  const [selectedPokemon, setSelectedPokemon] = useState<any>(null);
-  const addCaughtPokemon = useStore(state => state.addCaughtPokemon);
+  const queryClient = useQueryClient();
+  const sheetRef = useRef<BottomSheetMethods | null>(null);
+
+  const [state, setState] = useState({
+    selectedPokemon: null as any,
+    activePokemon: null as any,
+    modalType: null as 'caught' | 'escaped' | 'alreadyCaught' | null,
+  });
+
+  const {caughtPokemons, addCaughtPokemon, releasePokemon} = useStore();
+
   const fetchPokemonPreview = async (pokemon: any) => {
     const response = await apiClient.get(pokemon.url);
     return response.data;
   };
-
-  const queryClient = useQueryClient();
 
   const handleFetchPokemon = async (pokemon: any) => {
     if (!pokemon) {
@@ -54,119 +66,74 @@ const HomeScreen: FunctionComponent = () => {
       revalidateIfStale: true,
     });
 
-    console.log('data', data);
-    setSelectedPokemon(data);
-    handleSnapPress(1);
+    setState(prev => ({...prev, selectedPokemon: data}));
+    sheetRef.current?.snapToIndex(1);
   };
-
-  const snapPoints = useMemo(() => ['25%', '50%'], []);
-  const sheetRef = useRef<BottomSheetMethods | null>(null);
 
   const catchPokemon = (pokemon: any) => {
-    const success = Math.random() < 0.5; // 50% chance to catch
+    if (caughtPokemons.some(p => p?.name === pokemon?.name)) {
+      setState(prev => ({
+        ...prev,
+        modalType: 'alreadyCaught',
+        activePokemon: pokemon,
+      }));
+      return;
+    }
+
+    const success = Math.random() < 0.5;
+    setState(prev => ({
+      ...prev,
+      activePokemon: pokemon,
+      modalType: success ? 'caught' : 'escaped',
+    }));
+
     if (success) {
-      addCaughtPokemon((prev: any) => [...prev, pokemon]);
-      Alert.alert('Success!', `${pokemon.name} has been caught!`);
-    } else {
-      Alert.alert('Oh no!', `${pokemon.name} escaped! Try again.`);
+      addCaughtPokemon(pokemon);
     }
   };
-
-  const handleClosePress = useCallback(() => {
-    sheetRef.current?.close();
-  }, []);
-
-  const handleSnapPress = useCallback((index: number) => {
-    if (sheetRef.current) {
-      sheetRef.current.snapToIndex(index);
-    } else {
-      console.warn('BottomSheet ref is not set yet');
-    }
-  }, []);
 
   const {data, isFetchingNextPage, fetchNextPage, hasNextPage} =
     useInfiniteQuery({
       queryKey: ['pokemon'],
       initialPageParam: 'https://pokeapi.co/api/v2/pokemon?limit=10&offset=0',
-      queryFn: async ({
-        pageParam = 'https://pokeapi.co/api/v2/pokemon?limit=10&offset=0',
-      }) => {
+      queryFn: async ({pageParam}) => {
         const response = await apiClient.get(pageParam);
-        if (!response?.data) {
-          throw new Error('Invalid API response');
-        }
-        return response.data;
+        return response.data ?? [];
       },
       getNextPageParam: lastPage => lastPage?.next ?? undefined,
     });
 
-  const pokemonList = data?.pages?.flatMap(page => page.results) ?? [];
+  const pokemonList = useMemo(
+    () => data?.pages?.flatMap(page => page.results) ?? [],
+    [data],
+  );
 
-  const renderItem: ListRenderItem<any> = ({item}) => {
-    return (
-      <TouchableOpacity onPress={() => handleFetchPokemon(item)}>
-        <View row style={styles.itemContainer}>
-          <Image
-            source={{
-              uri: `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${
-                item.url.split('/')[6]
-              }.png`,
-            }}
-            style={styles.image}
-          />
-          <Text>{item.name}</Text>
-        </View>
-        <View row style={styles.buttonContainer}>
-          <SubmitButton
-            text="Catch Pokemon"
-            onPress={() => catchPokemon(item)}
-            textColor="secondary"
-            style={styles.button}
-            textSize={size.XS}
-            rightIcon={
-              <CirclePlus
-                color={colors.secondary}
-                size={20}
-                style={styles.iconStyle}
-              />
-            }
-          />
-          <SubmitButton
-            text="Settings"
-            onPress={() =>
-              navigation.navigate('PokemonDetails', {pokemon: item})
-            }
-            textColor="secondary"
-            style={styles.button}
-            textSize={size.XS}
-            rightIcon={
-              <Settings
-                color={colors.secondary}
-                size={20}
-                style={styles.iconStyle}
-              />
-            }
-          />
-          <SubmitButton
-            text="View Pokemon"
-            onPress={() =>
-              navigation.navigate('PokemonDetails', {pokemon: item})
-            }
-            textColor="secondary"
-            style={styles.button}
-            textSize={size.XS}
-            rightIcon={
-              <Eye
-                color={colors.secondary}
-                size={20}
-                style={styles.iconStyle}
-              />
-            }
-          />
-        </View>
-      </TouchableOpacity>
-    );
-  };
+  const renderItem: ListRenderItem<any> = ({item}) => (
+    <TouchableOpacity onPress={() => handleFetchPokemon(item)}>
+      <View row style={styles.itemContainer}>
+        <Image source={{uri: getPokemonImage(item)}} style={styles.image} />
+        <Text>{item.name}</Text>
+      </View>
+      <View row style={styles.buttonContainer}>
+        <SubmitButton
+          text="Catch Pokemon"
+          onPress={() => catchPokemon(item)}
+          textColor="secondary"
+          style={styles.button}
+          textSize={size.XS}
+          rightIcon={<CirclePlus color={colors.secondary} size={20} />}
+        />
+        <SubmitButton
+          text="View Pokemon"
+          onPress={() => navigation.navigate('PokemonDetails', {pokemon: item})}
+          textColor="secondary"
+          style={styles.button}
+          textSize={size.XS}
+          rightIcon={<Eye color={colors.secondary} size={20} />}
+        />
+      </View>
+    </TouchableOpacity>
+  );
 
   return (
     <ScreenWrapper>
@@ -174,11 +141,7 @@ const HomeScreen: FunctionComponent = () => {
         data={pokemonList}
         renderItem={renderItem}
         keyExtractor={item => item.name}
-        onEndReached={() => {
-          if (hasNextPage) {
-            fetchNextPage();
-          }
-        }}
+        onEndReached={() => hasNextPage && fetchNextPage()}
         onEndReachedThreshold={0.5}
         ListEmptyComponent={<Text>No Pokémon found</Text>}
         ListFooterComponent={
@@ -188,32 +151,85 @@ const HomeScreen: FunctionComponent = () => {
         }
         showsVerticalScrollIndicator={false}
       />
+
+      {/* Modals */}
+      <Portal>
+        <PokemonModal
+          visible={!!state.modalType}
+          type={state.modalType}
+          pokemon={state.activePokemon}
+          onClose={() => {
+            if (state.modalType === 'alreadyCaught') {
+              releasePokemon(state.activePokemon?.name);
+            }
+            setState(prev => ({...prev, modalType: null}));
+          }}
+        />
+      </Portal>
+
+      {/* Bottom Sheet */}
       <CustomBottomSheet
         sheetRef={sheetRef}
-        snapPoints={snapPoints}
-        onClose={handleClosePress}>
-        <View style={styles.bottomSheetContainer}>
-          <Text style={styles.bottomSheetText}>{selectedPokemon?.name}</Text>
-          <Image
-            source={{
-              uri: selectedPokemon?.sprites?.front_default,
-            }}
-            style={styles.image}
-          />
-          <Text>Height: {selectedPokemon?.height / 10} m</Text>
-          <Text>Weight: {selectedPokemon?.weight / 10} kg</Text>
-          <Text>Base Experience: {selectedPokemon?.base_experience}</Text>
-          <Text>Abilities:</Text>
-          <View row style={styles.abilitiesContainer}>
-            {selectedPokemon?.abilities?.map((ability: any) => (
-              <View style={styles.abilityContainer} key={ability.ability.name}>
-                <Text color={'secondary'}>{ability.ability.name}</Text>
-              </View>
-            ))}
+        snapPoints={['25%', '50%']}
+        onClose={() => sheetRef.current?.close()}>
+        {state.selectedPokemon && (
+          <View style={styles.bottomSheetContainer}>
+            <Text style={styles.bottomSheetText}>
+              {state.selectedPokemon.name}
+            </Text>
+            <Image
+              source={{uri: state.selectedPokemon.sprites.front_default}}
+              style={styles.image}
+            />
+            <Text>Height: {state.selectedPokemon.height / 10} m</Text>
+            <Text>Weight: {state.selectedPokemon.weight / 10} kg</Text>
+            <Text>
+              Base Experience: {state.selectedPokemon.base_experience}
+            </Text>
+            <Text>Abilities:</Text>
+            <View row style={styles.abilitiesContainer}>
+              {state.selectedPokemon.abilities.map((ability: any) => (
+                <View
+                  style={styles.abilityContainer}
+                  key={ability.ability.name}>
+                  <Text color="secondary">{ability.ability.name}</Text>
+                </View>
+              ))}
+            </View>
           </View>
-        </View>
+        )}
       </CustomBottomSheet>
     </ScreenWrapper>
+  );
+};
+
+const PokemonModal = ({visible, type, pokemon, onClose}: PokemonModalProps) => {
+  if (!type) {
+    return null;
+  }
+  const messages: Record<string, string> = {
+    caught: `${pokemon?.name} has been caught!`,
+    escaped: `Oh no! ${pokemon?.name} escaped! Try again.`,
+    alreadyCaught: `You already caught ${pokemon?.name}!`,
+  };
+
+  return (
+    <Modal
+      visible={visible}
+      onDismiss={onClose}
+      contentContainerStyle={styles.modal}>
+      <Text style={styles.modalText}>
+        {type === 'caught' ? 'Success!' : 'Oops!'}
+      </Text>
+      <Text>{messages[type]}</Text>
+      <Image
+        source={{uri: pokemon?.sprites?.front_default}}
+        style={styles.image}
+      />
+      <Button onPress={onClose}>
+        {type === 'alreadyCaught' ? 'Release Pokemon' : 'Close'}
+      </Button>
+    </Modal>
   );
 };
 
@@ -225,11 +241,12 @@ const styles = StyleSheet.create({
   itemContainer: {
     alignItems: 'center',
     padding: 10,
-    marginBottom: 10,
   },
   button: {
-    width: 120,
+    width: 140,
     backgroundColor: colors.blue,
+    justifyContent: 'space-between',
+    alignItems: 'center',
   },
   buttonContainer: {
     gap: 10,
@@ -254,6 +271,17 @@ const styles = StyleSheet.create({
     padding: 10,
     backgroundColor: colors.blue,
     borderRadius: 10,
+  },
+  modal: {
+    backgroundColor: 'white',
+    padding: 20,
+    margin: 20,
+    borderRadius: 10,
+    alignItems: 'center',
+  },
+  modalText: {
+    fontSize: 18,
+    fontWeight: 'bold',
   },
 });
 
