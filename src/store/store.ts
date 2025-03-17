@@ -34,21 +34,17 @@ export const useStore = create<AuthState>()(
       // Add a Pokémon (Catch)
       addCaughtPokemon: pokemon =>
         set(state => {
-          // Avoid duplicates
-          if (state.caughtPokemons.some(p => p.name === pokemon.name)) {
-            alert(`${pokemon.name} is already caught!`);
-            return state;
+          if (!state.caughtPokemons.some(p => p?.name === pokemon?.name)) {
+            return {caughtPokemons: [...state.caughtPokemons, pokemon]};
           }
-
-          const updatedPokemons = [...state.caughtPokemons, pokemon];
-          return {caughtPokemons: updatedPokemons};
+          return state;
         }),
 
       // Remove a Pokémon (Release)
       releasePokemon: name =>
         set(state => {
           const updatedPokemons = state.caughtPokemons.filter(
-            p => p.name !== name,
+            p => p?.name !== name,
           );
           return {caughtPokemons: updatedPokemons};
         }),
