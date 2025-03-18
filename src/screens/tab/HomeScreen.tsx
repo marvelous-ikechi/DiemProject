@@ -8,10 +8,16 @@ import {
 } from 'react-native';
 import {Button, Modal, Portal} from 'react-native-paper';
 import {CirclePlus, Eye} from 'lucide-react-native';
-import React, {FunctionComponent, useMemo, useRef, useState} from 'react';
+import React, {
+  FunctionComponent,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import {useInfiniteQuery, useQueryClient} from '@tanstack/react-query';
 
-import {AppStackParamList} from '@src/navigation/types/AppStackParamList';
+import {AppStackParamList} from 'src/navigation/types/AppStackParamList';
 import {BottomSheetMethods} from '@gorhom/bottom-sheet/lib/typescript/types';
 import CustomBottomSheet from 'src/components/ui/BottomSheet/BottomSheet';
 import ScreenWrapper from 'src/components/container/ScreenWrapper';
@@ -24,6 +30,7 @@ import {colors} from 'src/utils/colors';
 import {getPokemonImage} from 'src/utils/pokemonUtils';
 import {size} from 'src/utils/size';
 import {useNavigation} from '@react-navigation/native';
+import usePushNotifications from 'src/hooks/usePushNotifications';
 import useStore from 'src/store/store';
 
 type Props = StackNavigationProp<AppStackParamList, 'BottomTab'>;
@@ -41,6 +48,11 @@ const HomeScreen: FunctionComponent = () => {
   const navigation = useNavigation<Props>();
   const queryClient = useQueryClient();
   const sheetRef = useRef<BottomSheetMethods | null>(null);
+
+  const {initializeFirebase} = usePushNotifications();
+  useEffect(() => {
+    initializeFirebase();
+  }, [initializeFirebase]);
 
   const [state, setState] = useState({
     selectedPokemon: null as any,
