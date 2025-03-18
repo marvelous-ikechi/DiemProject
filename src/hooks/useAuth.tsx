@@ -1,3 +1,6 @@
+// @ts-ignore
+globalThis.RNFB_SILENCE_MODULAR_DEPRECATION_WARNINGS = true;
+
 import {IOS_CLIENT_ID, WEB_CLIENT_ID} from '@env';
 import {NavigationProp, useNavigation} from '@react-navigation/native';
 import {useEffect, useState} from 'react';
