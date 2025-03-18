@@ -1,33 +1,66 @@
 import {PermissionsAndroid, Platform} from 'react-native';
+import notifee, {AndroidImportance} from '@notifee/react-native';
 
 import PushNotification from 'react-native-push-notification';
 import PushNotificationIOS from '@react-native-community/push-notification-ios';
+import Toast from 'react-native-toast-message';
 import messaging from '@react-native-firebase/messaging';
 import {useEffect} from 'react';
 
+// Background Message Handler
 messaging().setBackgroundMessageHandler(async remoteMessage => {
-  console.log('Message handled in the background!', remoteMessage);
+  await notifee.displayNotification({
+    title: remoteMessage.notification?.title,
+    body: remoteMessage.notification?.body,
+    android: {
+      channelId: 'pokemon-channel',
+      pressAction: {id: 'default'},
+    },
+  });
 });
 
 const usePushNotifications = () => {
-  // Request permission to receive notifications (iOS & Android 13+)
+  //  Request permission for notifications
   const requestPermission = async () => {
     try {
       if (Platform.OS === 'ios') {
-        const authStatus = await messaging().requestPermission();
-        console.log('Authorization status (iOS):', authStatus);
+        const authStatus = await messaging().hasPermission();
+        if (authStatus === messaging.AuthorizationStatus.AUTHORIZED) {
+          return;
+        }
+        const newAuthStatus = await messaging().requestPermission();
+        console.log('Authorization status (iOS):', newAuthStatus);
       } else if (Platform.OS === 'android') {
+        const currentStatus = await PermissionsAndroid.check(
+          PermissionsAndroid.PERMISSIONS.POST_NOTIFICATIONS,
+        );
+
+        if (currentStatus) {
+          return;
+        }
         const granted = await PermissionsAndroid.request(
           PermissionsAndroid.PERMISSIONS.POST_NOTIFICATIONS,
         );
-        if (granted === PermissionsAndroid.RESULTS.GRANTED) {
-          console.log('Notification permission granted (Android)');
-        } else {
-          console.log('Notification permission denied (Android)');
-        }
+        const permissionGranted =
+          granted === PermissionsAndroid.RESULTS.GRANTED;
+
+        Toast.show({
+          type: permissionGranted ? 'genericToast' : 'error',
+          text1: 'Notification permission',
+          text2: permissionGranted
+            ? ' Notification permission granted (Android)'
+            : ' Notification permission denied (Android)',
+        });
       }
     } catch (error) {
-      console.error('Failed to request permission:', error);
+      Toast.show({
+        type: 'error',
+        text1: 'Notification permission',
+        text2:
+          error instanceof Error
+            ? error.message
+            : 'An error occurred while requesting notification permission',
+      });
     }
   };
 
@@ -35,86 +68,84 @@ const usePushNotifications = () => {
   const getToken = async () => {
     try {
       await messaging().registerDeviceForRemoteMessages();
-      const token = await messaging().getToken();
-      console.log('Device token:', token);
-      // Send this token to your server for sending messages
+      await messaging().getToken();
     } catch (error) {
       console.error('Failed to get token:', error);
     }
   };
 
-  // Handle incoming messages
-  const handleMessages = () => {
-    const unsubscribeOnMessage = messaging().onMessage(async remoteMessage => {
-      console.log('Message received:', remoteMessage);
-
-      // Show local notification for foreground messages (Android)
-      PushNotification.localNotification({
-        title: remoteMessage.notification?.title,
-        message: remoteMessage.notification?.body ?? '',
-        channelId: 'every-user-channel',
-      });
-    });
-
-    const unsubscribeOnNotificationOpened = messaging().onNotificationOpenedApp(
-      remoteMessage => {
-        console.log('Notification opened app:', remoteMessage);
-        // Do some action
+  // Handle incoming foreground notifications
+  const onMessageReceived = async (message: any) => {
+    await notifee.displayNotification({
+      title: message?.notification?.title,
+      body: message?.notification?.body,
+      android: {
+        channelId: 'pokemon-channel',
+        pressAction: {id: 'default'},
       },
-    );
-
-    return () => {
-      unsubscribeOnMessage();
-      unsubscribeOnNotificationOpened();
-    };
+    });
   };
 
-  useEffect(() => {
-    getToken();
-    return handleMessages();
-  }, []);
+  // Handle app opening from a notification
+  const handleNotificationOpenedApp = () => {
+    messaging().onNotificationOpenedApp(remoteMessage => {
+      console.log('🚀 App opened from notification:', remoteMessage);
+    });
 
+    messaging()
+      .getInitialNotification()
+      .then(remoteMessage => {
+        if (remoteMessage) {
+          console.log(
+            'Notification caused app to open from killed state:',
+            remoteMessage,
+          );
+        }
+      });
+  };
+
+  // Create a Notification Channel
+  const createNotificationChannel = async () => {
+    await notifee.createChannel({
+      id: 'pokemon-channel',
+      name: 'Pokemon Channel',
+      importance: AndroidImportance.HIGH,
+    });
+
+    PushNotification.createChannel({
+      channelId: 'pokemon-channel',
+      channelName: 'Pokemon Channel',
+      channelDescription: 'A channel for pokemon notifications',
+      importance: 4,
+      vibrate: true,
+    });
+  };
+
+  // Initialize Firebase and permissions
   const initializeFirebase = async () => {
     try {
       await messaging().getToken();
       await requestPermission();
-      handleMessages();
     } catch (error) {
-      console.log('Error while initializing firebase:', error);
+      console.log('Error while initializing Firebase:', error);
     }
   };
 
+  // Configure push notifications
   const configurePushNotifications = () => {
-    PushNotification.createChannel(
-      {
-        channelId: 'every-user-channel',
-        channelName: 'Every User Channel',
-        channelDescription: 'A channel for every user notifications',
-        importance: 4,
-        vibrate: true,
-      },
-      (created: any) => console.log(`Notification channel created: ${created}`),
-    );
-
     PushNotification.configure({
-      onNotification: function (notification: {
-        title: any;
-        message: any;
-        finish: (arg0: any) => void;
-      }) {
-        console.log('NOTIFICATION:', notification);
-
-        // Show local notification if received in foreground
+      onNotification: function (notification: any) {
+        // Display local notification for foreground messages
         PushNotification.localNotification({
-          channelId: 'every-user-channel',
+          channelId: 'pokemon-channel',
           title: notification.title,
           message: notification.message,
         });
 
         notification.finish(PushNotificationIOS.FetchResult.NoData);
       },
-      onRegistrationError: function (err: {message: any}) {
-        console.error(err.message, err);
+      onRegistrationError: function (err: any) {
+        console.error('Push Notification Registration Error:', err);
       },
       permissions: {
         alert: true,
@@ -122,12 +153,16 @@ const usePushNotifications = () => {
         sound: true,
       },
       popInitialNotification: true,
-      requestPermissions: true,
+      requestPermissions: false,
     });
   };
 
   useEffect(() => {
+    createNotificationChannel();
     configurePushNotifications();
+    getToken();
+    messaging().onMessage(onMessageReceived);
+    handleNotificationOpenedApp();
   }, []);
 
   return {configurePushNotifications, initializeFirebase};
