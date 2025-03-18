@@ -1,17 +1,26 @@
+// @ts-ignore
+globalThis.RNFB_SILENCE_MODULAR_DEPRECATION_WARNINGS = true;
+
 import {PermissionsAndroid, Platform} from 'react-native';
 import notifee, {AndroidImportance} from '@notifee/react-native';
+import {useCallback, useEffect} from 'react';
 
+import {AppStackParamList} from '@src/navigation/types/AppStackParamList';
 import PushNotification from 'react-native-push-notification';
 import PushNotificationIOS from '@react-native-community/push-notification-ios';
+import {StackNavigationProp} from '@react-navigation/stack';
 import Toast from 'react-native-toast-message';
 import messaging from '@react-native-firebase/messaging';
-import {useEffect} from 'react';
+import {useNavigation} from '@react-navigation/native';
+
+type Props = StackNavigationProp<AppStackParamList, 'BottomTab'>;
 
 // Background Message Handler
 messaging().setBackgroundMessageHandler(async remoteMessage => {
   await notifee.displayNotification({
     title: remoteMessage.notification?.title,
     body: remoteMessage.notification?.body,
+    data: remoteMessage?.data,
     android: {
       channelId: 'pokemon-channel',
       pressAction: {id: 'default'},
@@ -20,6 +29,7 @@ messaging().setBackgroundMessageHandler(async remoteMessage => {
 });
 
 const usePushNotifications = () => {
+  const navigation = useNavigation<Props>();
   //  Request permission for notifications
   const requestPermission = async () => {
     try {
@@ -79,6 +89,7 @@ const usePushNotifications = () => {
     await notifee.displayNotification({
       title: message?.notification?.title,
       body: message?.notification?.body,
+      data: message?.data,
       android: {
         channelId: 'pokemon-channel',
         pressAction: {id: 'default'},
@@ -86,23 +97,16 @@ const usePushNotifications = () => {
     });
   };
 
-  // Handle app opening from a notification
-  const handleNotificationOpenedApp = () => {
-    messaging().onNotificationOpenedApp(remoteMessage => {
-      console.log('🚀 App opened from notification:', remoteMessage);
-    });
-
-    messaging()
-      .getInitialNotification()
-      .then(remoteMessage => {
-        if (remoteMessage) {
-          console.log(
-            'Notification caused app to open from killed state:',
-            remoteMessage,
-          );
-        }
-      });
-  };
+  const handleNotificationNavigation = useCallback(
+    (message: any) => {
+      if (message) {
+        navigation.navigate('PokemonDetails', {
+          pokemon: message,
+        });
+      }
+    },
+    [navigation],
+  );
 
   // Create a Notification Channel
   const createNotificationChannel = async () => {
@@ -157,13 +161,28 @@ const usePushNotifications = () => {
     });
   };
 
+  notifee.onBackgroundEvent(async event => {
+    handleNotificationNavigation(event?.detail?.notification?.data);
+  });
+
   useEffect(() => {
     createNotificationChannel();
     configurePushNotifications();
     getToken();
     messaging().onMessage(onMessageReceived);
-    handleNotificationOpenedApp();
-  }, []);
+    messaging().onNotificationOpenedApp(remoteMessage => {
+      handleNotificationNavigation(remoteMessage);
+    });
+
+    // Handle app opened from quit state
+    messaging()
+      .getInitialNotification()
+      .then(remoteMessage => {
+        if (remoteMessage) {
+          handleNotificationNavigation(remoteMessage);
+        }
+      });
+  }, [handleNotificationNavigation]);
 
   return {configurePushNotifications, initializeFirebase};
 };
