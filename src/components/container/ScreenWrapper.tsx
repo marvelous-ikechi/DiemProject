@@ -31,7 +31,7 @@ const ScreenWrapper: FunctionComponent<Props> = ({
             <MoveLeft size={24} color={colors.blue} />
           </TouchableOpacity>
         )}
-        {children}
+        <View style={styles.children}>{children}</View>
       </View>
     </SafeAreaView>
   );
@@ -51,6 +51,9 @@ const styles = StyleSheet.create({
   center: {
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  children: {
+    flex: 1,
   },
 });
 
