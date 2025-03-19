@@ -4,4 +4,5 @@ export const colors = {
   primary: '#000000',
   secondary: '#ffffff',
   disabled: 'grey',
+  card: '#3674B5',
 };
