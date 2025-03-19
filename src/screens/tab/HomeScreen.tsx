@@ -238,10 +238,7 @@ const PokemonModal = ({visible, type, pokemon, onClose}: PokemonModalProps) => {
         {type === 'caught' ? 'Success!' : 'Oops!'}
       </Text>
       <Text>{messages[type]}</Text>
-      <Image
-        source={{uri: pokemon?.sprites?.front_default}}
-        style={styles.image}
-      />
+      <Image source={{uri: getPokemonImage(pokemon)}} style={styles.image} />
       <Button onPress={onClose}>
         {type === 'alreadyCaught' ? 'Release Pokemon' : 'Close'}
       </Button>
