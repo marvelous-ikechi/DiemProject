@@ -3354,21 +3354,21 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@tanstack/query-core@npm:5.68.0":
-  version: 5.68.0
-  resolution: "@tanstack/query-core@npm:5.68.0"
-  checksum: 1798a84b0d978a8f39864479d24f75ec1a0c4c713e998e109d5d3cc8cd7b0bed7ffc8c99a735120d380f2858b4e97f38cb1fe571ab91cf73e54cff44b49a53b8
+"@tanstack/query-core@npm:5.69.0":
+  version: 5.69.0
+  resolution: "@tanstack/query-core@npm:5.69.0"
+  checksum: 5326acf451fb67580ef13e1322787f815df901839880f4931b537585afbba76ce7f1d3d46611c4205fa27a36a6fe3900b176e67b12a9f8b0c605ec0b045347f6
   languageName: node
   linkType: hard
 
 "@tanstack/react-query@npm:^5.68.0":
-  version: 5.68.0
-  resolution: "@tanstack/react-query@npm:5.68.0"
+  version: 5.69.0
+  resolution: "@tanstack/react-query@npm:5.69.0"
   dependencies:
-    "@tanstack/query-core": 5.68.0
+    "@tanstack/query-core": 5.69.0
   peerDependencies:
     react: ^18 || ^19
-  checksum: a0e9069863c580472b9cb758a52138f1f11cffec1574db1934dd5f683ad3f8e36be5dea17375b359cc3331131eef4a012c04e7b3490db3d25b5e9f1fb5b44f85
+  checksum: 3cbbdeabb832aa64bfeab987d41c88e0a93b37eec8bdc430bb3a46cce3729361c350657356db9eb4b9a589f9bb0e30ca2798e22a3cddb0cfb1ccc762cef4dda3
   languageName: node
   linkType: hard
 
@@ -3506,11 +3506,11 @@ __metadata:
   linkType: hard
 
 "@types/react@npm:*, @types/react@npm:^19.0.0":
-  version: 19.0.10
-  resolution: "@types/react@npm:19.0.10"
+  version: 19.0.11
+  resolution: "@types/react@npm:19.0.11"
   dependencies:
     csstype: ^3.0.2
-  checksum: e257e87bc3464825014523aecc700540a9da41c3c23136c03da9b2b7999251ac70ef9e594febdefeea6abe51da2475b42e5d96af6559d76f8d54bffc0b0ddacd
+  checksum: c96ef57fd3beccb31e46399e38b31e2acad7e4fcd18f80e063753d420d566cb7e30e50d5c9cad80146bf3076e03f85711cfcb38b76e17c4c762cc1289116a054
   languageName: node
   linkType: hard
 
@@ -4496,9 +4496,9 @@ __metadata:
   linkType: hard
 
 "caniuse-lite@npm:^1.0.30001688":
-  version: 1.0.30001704
-  resolution: "caniuse-lite@npm:1.0.30001704"
-  checksum: ac8c1b625198c9fdf03f55ef631a0917d29d368ded8e8b2e6a3111cb7433c30b2ef16a6dc44077fb6176e76881a51818d55f24efd04478f5e98b6724b64a8f5c
+  version: 1.0.30001706
+  resolution: "caniuse-lite@npm:1.0.30001706"
+  checksum: e164acd9d40b36fd0bfbd779962dc2c5e67defa932c1c8e1d36f1fdb96eafd18d524d1d28cfa93444c0f414470da413007916dc4a215398e035003749281685b
   languageName: node
   linkType: hard
 
@@ -5194,9 +5194,9 @@ __metadata:
   linkType: hard
 
 "electron-to-chromium@npm:^1.5.73":
-  version: 1.5.118
-  resolution: "electron-to-chromium@npm:1.5.118"
-  checksum: 5495c9aaf042cec804d3cdd3608fbe5174379e35c5e0cd5d94e07f9c2b0d875ed34e0d020fc7e387790e6d1bed7f233c52b1ba8302626ce341e51a237b23203a
+  version: 1.5.120
+  resolution: "electron-to-chromium@npm:1.5.120"
+  checksum: 868a112942a906edbd730d948276cb198429b1dac52a7911df7f2199c227d37c197ea67c250a6bb388194f2a2b9f6bcdb7ff8a5635915920202d9966872b7ec9
   languageName: node
   linkType: hard
 
@@ -6007,9 +6007,9 @@ __metadata:
   linkType: hard
 
 "flow-parser@npm:0.*":
-  version: 0.265.0
-  resolution: "flow-parser@npm:0.265.0"
-  checksum: a7e3a3cfb1bd77b593cf02d21ad6941dbe4b422004d7f6333b56f8c6e1a92482e0b2d121ff7aaa1c2c531669a24872baa237e85ff9f3dbd10829730d17ad02f9
+  version: 0.265.3
+  resolution: "flow-parser@npm:0.265.3"
+  checksum: ace1509503e88f5d392ef9769ecb7db23305f163b474ba00b3505c6b93abd4faabae5c80fcc064eda09d8e9d1d0aebdb8bc1a2a3ed27e0ca80aed580dd381f13
   languageName: node
   linkType: hard
 
@@ -8192,9 +8192,9 @@ __metadata:
   linkType: hard
 
 "mime-db@npm:>= 1.43.0 < 2":
-  version: 1.53.0
-  resolution: "mime-db@npm:1.53.0"
-  checksum: 3fd9380bdc0b085d0b56b580e4f89ca4fc3b823722310d795c248f0806b9a80afd5d8f4347f015ad943b9ecfa7cc0b71dffa0db96fa776d01a13474821a2c7fb
+  version: 1.54.0
+  resolution: "mime-db@npm:1.54.0"
+  checksum: e99aaf2f23f5bd607deb08c83faba5dd25cf2fec90a7cc5b92d8260867ee08dab65312e1a589e60093dc7796d41e5fae013268418482f1db4c7d52d0a0960ac9
   languageName: node
   linkType: hard
 
@@ -8385,11 +8385,11 @@ __metadata:
   linkType: hard
 
 "nanoid@npm:^3.3.1":
-  version: 3.3.10
-  resolution: "nanoid@npm:3.3.10"
+  version: 3.3.11
+  resolution: "nanoid@npm:3.3.11"
   bin:
     nanoid: bin/nanoid.cjs
-  checksum: fcc505b06a816c847d2ad4f5690893d4f9dc61863291d065b2b02d879be4ae60d09faf44f2c619ec08f732b627cf34f6d3dd2913e52d3fe287dedb0b84448c91
+  checksum: 3be20d8866a57a6b6d218e82549711c8352ed969f9ab3c45379da28f405363ad4c9aeb0b39e9abc101a529ca65a72ff9502b00bf74a912c4b64a9d62dfd26c29
   languageName: node
   linkType: hard
 
@@ -8571,13 +8571,14 @@ __metadata:
   linkType: hard
 
 "object.entries@npm:^1.1.8":
-  version: 1.1.8
-  resolution: "object.entries@npm:1.1.8"
+  version: 1.1.9
+  resolution: "object.entries@npm:1.1.9"
   dependencies:
-    call-bind: ^1.0.7
+    call-bind: ^1.0.8
+    call-bound: ^1.0.4
     define-properties: ^1.2.1
-    es-object-atoms: ^1.0.0
-  checksum: 5314877cb637ef3437a30bba61d9bacdb3ce74bf73ac101518be0633c37840c8cc67407edb341f766e8093b3d7516d5c3358f25adfee4a2c697c0ec4c8491907
+    es-object-atoms: ^1.1.1
+  checksum: 0ab2ef331c4d6a53ff600a5d69182948d453107c3a1f7fd91bc29d387538c2aba21d04949a74f57c21907208b1f6fb175567fd1f39f1a7a4046ba1bca762fb41
   languageName: node
   linkType: hard
 
