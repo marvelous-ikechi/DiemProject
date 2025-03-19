@@ -34,7 +34,7 @@ const ProfileScreen: FunctionComponent = () => {
       <View style={styles.card}>
         <Pressable onPress={() => navigation.navigate('CaughtPokemons')}>
           <View row>
-            <Text color={'secondary'}>Caught Pokemons</Text>
+            <Text color={colors.secondary}>Caught Pokemons</Text>
             <ChevronRight size={20} color={colors.secondary} />
           </View>
         </Pressable>
