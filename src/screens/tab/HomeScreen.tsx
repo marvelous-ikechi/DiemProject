@@ -122,7 +122,7 @@ const HomeScreen: FunctionComponent = () => {
 
   const renderItem: ListRenderItem<any> = ({item}) => (
     <TouchableOpacity onPress={() => handleFetchPokemon(item)}>
-      <View row style={styles.itemContainer}>
+      <View column style={styles.itemContainer}>
         <Image source={{uri: getPokemonImage(item)}} style={styles.image} />
         <Text>{item.name}</Text>
       </View>
