@@ -20,6 +20,7 @@ import {useInfiniteQuery, useQueryClient} from '@tanstack/react-query';
 import {AppStackParamList} from 'src/navigation/types/AppStackParamList';
 import {BottomSheetMethods} from '@gorhom/bottom-sheet/lib/typescript/types';
 import CustomBottomSheet from 'src/components/ui/BottomSheet/BottomSheet';
+import {PokemonType} from 'src/types/appTypes';
 import ScreenWrapper from 'src/components/container/ScreenWrapper';
 import {StackNavigationProp} from '@react-navigation/stack';
 import SubmitButton from 'src/components/ui/Button/SubmitButton';
@@ -40,7 +41,7 @@ type PokemonModalType = 'caught' | 'escaped' | 'alreadyCaught';
 type PokemonModalProps = {
   visible: boolean;
   type: PokemonModalType | null;
-  pokemon: any;
+  pokemon: PokemonType | null;
   onClose: () => void;
 };
 
@@ -55,19 +56,19 @@ const HomeScreen: FunctionComponent = () => {
   }, [initializeFirebase]);
 
   const [state, setState] = useState({
-    selectedPokemon: null as any,
-    activePokemon: null as any,
+    selectedPokemon: null as PokemonType | null,
+    activePokemon: null as PokemonType | null,
     modalType: null as PokemonModalType | null,
   });
 
   const {caughtPokemons, addCaughtPokemon, releasePokemon} = useStore();
 
-  const fetchPokemonPreview = async (pokemon: any) => {
+  const fetchPokemonPreview = async (pokemon: PokemonType) => {
     const response = await apiClient.get(pokemon.url);
     return response.data;
   };
 
-  const handleFetchPokemon = async (pokemon: any) => {
+  const handleFetchPokemon = async (pokemon: PokemonType) => {
     if (!pokemon) {
       return;
     }
@@ -82,7 +83,7 @@ const HomeScreen: FunctionComponent = () => {
     sheetRef.current?.snapToIndex(1);
   };
 
-  const catchPokemon = (pokemon: any) => {
+  const catchPokemon = (pokemon: PokemonType) => {
     if (caughtPokemons.some(p => p?.name === pokemon?.name)) {
       setState(prev => ({
         ...prev,
@@ -176,7 +177,7 @@ const HomeScreen: FunctionComponent = () => {
           pokemon={state.activePokemon}
           onClose={() => {
             if (state.modalType === 'alreadyCaught') {
-              releasePokemon(state.activePokemon?.name);
+              releasePokemon(state.activePokemon?.name ?? '');
             }
             setState(prev => ({...prev, modalType: null}));
           }}
@@ -194,17 +195,17 @@ const HomeScreen: FunctionComponent = () => {
               {state.selectedPokemon.name}
             </Text>
             <Image
-              source={{uri: state.selectedPokemon.sprites.front_default}}
+              source={{uri: state?.selectedPokemon?.sprites?.front_default}}
               style={styles.image}
             />
-            <Text>Height: {state.selectedPokemon.height / 10} m</Text>
-            <Text>Weight: {state.selectedPokemon.weight / 10} kg</Text>
+            <Text>Height: {(state?.selectedPokemon?.height ?? 0) / 10} m</Text>
+            <Text>Weight: {(state?.selectedPokemon?.weight ?? 0) / 10} kg</Text>
             <Text>
-              Base Experience: {state.selectedPokemon.base_experience}
+              Base Experience: {state?.selectedPokemon?.base_experience}
             </Text>
             <Text>Abilities:</Text>
             <View row style={styles.abilitiesContainer}>
-              {state.selectedPokemon.abilities.map((ability: any) => (
+              {state?.selectedPokemon?.abilities?.map((ability: any) => (
                 <View
                   style={styles.abilityContainer}
                   key={ability.ability.name}>
@@ -238,7 +239,10 @@ const PokemonModal = ({visible, type, pokemon, onClose}: PokemonModalProps) => {
         {type === 'caught' ? 'Success!' : 'Oops!'}
       </Text>
       <Text>{messages[type]}</Text>
-      <Image source={{uri: getPokemonImage(pokemon)}} style={styles.image} />
+      <Image
+        source={{uri: getPokemonImage(pokemon as PokemonType)}}
+        style={styles.image}
+      />
       <Button onPress={onClose}>
         {type === 'alreadyCaught' ? 'Release Pokemon' : 'Close'}
       </Button>
