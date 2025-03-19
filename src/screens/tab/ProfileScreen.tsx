@@ -28,7 +28,8 @@ const ProfileScreen: FunctionComponent = () => {
           <User size={60} color={colors.primary} />
         )}
         <Text>
-          {userData?.givenName} {userData?.familyName}
+          {userData?.givenName ?? 'A man has no name'}{' '}
+          {userData?.familyName ?? ''}
         </Text>
       </View>
       <View style={styles.card}>
@@ -41,7 +42,7 @@ const ProfileScreen: FunctionComponent = () => {
       </View>
       <View style={styles.logoutButton}>
         <SubmitButton
-          textColor={'danger'}
+          textColor={colors.danger}
           text="Logout"
           backgroundColor={'secondary'}
           onPress={removeUser}
