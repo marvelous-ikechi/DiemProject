@@ -114,14 +114,8 @@ const usePushNotifications = () => {
       id: 'pokemon-channel',
       name: 'Pokemon Channel',
       importance: AndroidImportance.HIGH,
-    });
-
-    PushNotification.createChannel({
-      channelId: 'pokemon-channel',
-      channelName: 'Pokemon Channel',
-      channelDescription: 'A channel for pokemon notifications',
-      importance: 4,
-      vibrate: true,
+      description: 'A channel for pokemon notifications',
+      vibration: true,
     });
   };
 
@@ -140,12 +134,11 @@ const usePushNotifications = () => {
     PushNotification.configure({
       onNotification: function (notification: any) {
         // Display local notification for foreground messages
-        PushNotification.localNotification({
-          channelId: 'pokemon-channel',
+        notifee.displayNotification({
           title: notification.title,
-          message: notification.message,
+          body: notification.message,
+          id: 'pokemon-channel',
         });
-
         notification.finish(PushNotificationIOS.FetchResult.NoData);
       },
       onRegistrationError: function (err: any) {
