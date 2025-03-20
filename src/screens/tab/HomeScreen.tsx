@@ -131,7 +131,7 @@ const HomeScreen: FunctionComponent = () => {
         <SubmitButton
           text="Catch Pokemon"
           onPress={() => catchPokemon(item)}
-          textColor="secondary"
+          textColor={colors.secondary}
           style={styles.button}
           textSize={size.XS}
           rightIcon={<CirclePlus color={colors.secondary} size={20} />}
@@ -139,7 +139,7 @@ const HomeScreen: FunctionComponent = () => {
         <SubmitButton
           text="View Pokemon"
           onPress={() => navigation.navigate('PokemonDetails', {pokemon: item})}
-          textColor="secondary"
+          textColor={colors.secondary}
           style={styles.button}
           textSize={size.XS}
           rightIcon={<Eye color={colors.secondary} size={20} />}
