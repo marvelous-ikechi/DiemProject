@@ -134,6 +134,7 @@ const HomeScreen: FunctionComponent = () => {
           textColor={colors.secondary}
           style={styles.button}
           textSize={size.XS}
+          testID="catch-pokemon-button"
           rightIcon={<CirclePlus color={colors.secondary} size={20} />}
         />
         <SubmitButton
@@ -143,6 +144,7 @@ const HomeScreen: FunctionComponent = () => {
           style={styles.button}
           textSize={size.XS}
           rightIcon={<Eye color={colors.secondary} size={20} />}
+          testID="view-pokemon-button"
         />
       </View>
     </TouchableOpacity>
