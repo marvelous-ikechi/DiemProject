@@ -1,7 +1,8 @@
 import {ActivityIndicator, Image, ScrollView, StyleSheet} from 'react-native';
 import React, {FunctionComponent} from 'react';
 
-import {AppStackParamList} from '@src/navigation/types/AppStackParamList';
+import {AppStackParamList} from 'src/navigation/types/AppStackParamList';
+import ErrorScreen from 'src/components/container/ErrorScreen';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import ScreenWrapper from 'src/components/container/ScreenWrapper';
 import Text from 'src/components/ui/Text/Text';
@@ -15,7 +16,7 @@ type Props = NativeStackScreenProps<AppStackParamList, 'PokemonDetails'>;
 const PokemonDetails: FunctionComponent<Props> = ({route}) => {
   const {pokemon} = route.params;
 
-  const {data, isLoading, error} = useQuery({
+  const {data, isLoading, error, refetch} = useQuery({
     queryKey: ['pokemon', pokemon.url],
     queryFn: async () => {
       const response = await apiClient.get(pokemon.url);
@@ -25,16 +26,16 @@ const PokemonDetails: FunctionComponent<Props> = ({route}) => {
 
   if (isLoading) {
     return (
-      <ScreenWrapper>
+      <View style={styles.isLoadingViewStyle}>
         <ActivityIndicator size="large" color="blue" />
-      </ScreenWrapper>
+      </View>
     );
   }
 
   if (error) {
     return (
       <ScreenWrapper>
-        <Text>Error loading Pokémon details.</Text>
+        <ErrorScreen error={error.message} onRetry={refetch} />
       </ScreenWrapper>
     );
   }
@@ -149,6 +150,11 @@ const styles = StyleSheet.create({
   badgeText: {
     color: colors.secondary,
     fontSize: 14,
+  },
+  isLoadingViewStyle: {
+    justifyContent: 'center',
+    flex: 1,
+    alignItems: 'center',
   },
 });
 
