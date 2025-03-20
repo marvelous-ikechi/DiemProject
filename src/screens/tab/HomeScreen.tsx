@@ -149,7 +149,7 @@ const HomeScreen: FunctionComponent = () => {
   );
 
   return (
-    <ScreenWrapper>
+    <ScreenWrapper testID="home-screen">
       <FlatList
         data={pokemonList}
         renderItem={renderItem}
