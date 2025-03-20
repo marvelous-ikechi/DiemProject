@@ -158,39 +158,43 @@ const HomeScreen: FunctionComponent = () => {
     </TouchableOpacity>
   );
 
+  if (error) {
+    return (
+      <ScreenWrapper>
+        <ErrorScreen error={error.message} onRetry={refetch} />
+      </ScreenWrapper>
+    );
+  }
+
   return (
     <ScreenWrapper testID="home-screen">
-      {error ? (
-        <ErrorScreen error={error.message} onRetry={refetch} />
-      ) : (
-        <FlatList
-          data={pokemonList}
-          renderItem={renderItem}
-          keyExtractor={item => item.name}
-          onEndReached={() => hasNextPage && fetchNextPage()}
-          onEndReachedThreshold={0.5}
-          contentContainerStyle={styles.listContainer}
-          ListEmptyComponent={
-            <View style={styles.emptyListComponent}>
-              {isLoading ? (
-                <ActivityIndicator size={'large'} color={colors.blue} />
-              ) : (
-                <Text>No Pokémon found</Text>
-              )}
-            </View>
-          }
-          ListFooterComponent={
-            isFetchingNextPage ? (
-              <ActivityIndicator
-                size="small"
-                style={styles.activityIndicator}
-                color={colors.blue}
-              />
-            ) : null
-          }
-          showsVerticalScrollIndicator={false}
-        />
-      )}
+      <FlatList
+        data={pokemonList}
+        renderItem={renderItem}
+        keyExtractor={item => item.name}
+        onEndReached={() => hasNextPage && fetchNextPage()}
+        onEndReachedThreshold={0.5}
+        contentContainerStyle={styles.listContainer}
+        ListEmptyComponent={
+          <View style={styles.emptyListComponent}>
+            {isLoading ? (
+              <ActivityIndicator size={'large'} color={colors.blue} />
+            ) : (
+              <Text>No Pokémon found</Text>
+            )}
+          </View>
+        }
+        ListFooterComponent={
+          isFetchingNextPage ? (
+            <ActivityIndicator
+              size="small"
+              style={styles.activityIndicator}
+              color={colors.blue}
+            />
+          ) : null
+        }
+        showsVerticalScrollIndicator={false}
+      />
 
       {/* Modals */}
       <Portal>
