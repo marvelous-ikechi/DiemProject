@@ -20,6 +20,7 @@ import {useInfiniteQuery, useQueryClient} from '@tanstack/react-query';
 import {AppStackParamList} from 'src/navigation/types/AppStackParamList';
 import {BottomSheetMethods} from '@gorhom/bottom-sheet/lib/typescript/types';
 import CustomBottomSheet from 'src/components/ui/BottomSheet/BottomSheet';
+import ErrorScreen from 'src/components/container/ErrorScreen';
 import {PokemonType} from 'src/types/appTypes';
 import ScreenWrapper from 'src/components/container/ScreenWrapper';
 import {StackNavigationProp} from '@react-navigation/stack';
@@ -105,16 +106,23 @@ const HomeScreen: FunctionComponent = () => {
     }
   };
 
-  const {data, isFetchingNextPage, fetchNextPage, hasNextPage} =
-    useInfiniteQuery({
-      queryKey: ['pokemon'],
-      initialPageParam: 'https://pokeapi.co/api/v2/pokemon?limit=10&offset=0',
-      queryFn: async ({pageParam}) => {
-        const response = await apiClient.get(pageParam);
-        return response.data ?? [];
-      },
-      getNextPageParam: lastPage => lastPage?.next ?? undefined,
-    });
+  const {
+    data,
+    isFetchingNextPage,
+    fetchNextPage,
+    hasNextPage,
+    isLoading,
+    error,
+    refetch,
+  } = useInfiniteQuery({
+    queryKey: ['pokemon'],
+    initialPageParam: 'https://pokeapi.co/api/v2/pokemon?limit=10&offset=0',
+    queryFn: async ({pageParam}) => {
+      const response = await apiClient.get(pageParam);
+      return response.data ?? [];
+    },
+    getNextPageParam: lastPage => lastPage?.next ?? undefined,
+  });
 
   const pokemonList = useMemo(
     () => data?.pages?.flatMap(page => page.results) ?? [],
@@ -152,24 +160,37 @@ const HomeScreen: FunctionComponent = () => {
 
   return (
     <ScreenWrapper testID="home-screen">
-      <FlatList
-        data={pokemonList}
-        renderItem={renderItem}
-        keyExtractor={item => item.name}
-        onEndReached={() => hasNextPage && fetchNextPage()}
-        onEndReachedThreshold={0.5}
-        ListEmptyComponent={<Text>No Pokémon found</Text>}
-        ListFooterComponent={
-          isFetchingNextPage ? (
-            <ActivityIndicator
-              size="small"
-              style={styles.activityIndicator}
-              color={colors.blue}
-            />
-          ) : null
-        }
-        showsVerticalScrollIndicator={false}
-      />
+      {error ? (
+        <ErrorScreen error={error.message} onRetry={refetch} />
+      ) : (
+        <FlatList
+          data={pokemonList}
+          renderItem={renderItem}
+          keyExtractor={item => item.name}
+          onEndReached={() => hasNextPage && fetchNextPage()}
+          onEndReachedThreshold={0.5}
+          contentContainerStyle={styles.listContainer}
+          ListEmptyComponent={
+            <View style={styles.emptyListComponent}>
+              {isLoading ? (
+                <ActivityIndicator size={'large'} color={colors.blue} />
+              ) : (
+                <Text>No Pokémon found</Text>
+              )}
+            </View>
+          }
+          ListFooterComponent={
+            isFetchingNextPage ? (
+              <ActivityIndicator
+                size="small"
+                style={styles.activityIndicator}
+                color={colors.blue}
+              />
+            ) : null
+          }
+          showsVerticalScrollIndicator={false}
+        />
+      )}
 
       {/* Modals */}
       <Portal>
@@ -304,6 +325,14 @@ const styles = StyleSheet.create({
   },
   activityIndicator: {
     marginTop: 40,
+  },
+  emptyListComponent: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  listContainer: {
+    flexGrow: 1,
   },
 });
 
