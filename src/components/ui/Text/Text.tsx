@@ -2,12 +2,13 @@ import {Text as RNText, StyleSheet, TextProps, TextStyle} from 'react-native';
 
 import {size as AppSize} from 'src/utils/size';
 import React from 'react';
+import {colors} from 'src/utils/colors';
 
 interface Props extends TextProps {
   bold?: boolean;
   medium?: boolean;
   size?: number;
-  color?: 'primary' | 'secondary' | 'danger';
+  color?: string;
 }
 
 const Text: React.FC<Props> = ({
@@ -15,7 +16,7 @@ const Text: React.FC<Props> = ({
   bold,
   medium,
   size = AppSize.S,
-  color,
+  color = colors.primary,
   ...props
 }) => {
   // determine font
@@ -26,28 +27,12 @@ const Text: React.FC<Props> = ({
     fontFamily = 'Figtree-Medium';
   }
 
-  // determine text color
-  let textColor: string = '';
-  switch (color) {
-    case 'primary':
-      textColor = 'black';
-      break;
-    case 'secondary':
-      textColor = 'white';
-      break;
-    case 'danger':
-      textColor = 'red';
-      break;
-    default:
-      textColor = 'black';
-  }
-
   return (
     <RNText
       {...props}
       style={[
         styles.text,
-        {fontFamily, fontSize: size, color: textColor},
+        {fontFamily, fontSize: size, color},
         style as TextStyle,
       ]}
     />

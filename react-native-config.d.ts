@@ -10,3 +10,6 @@ declare module '@env' {
   export const MEASUREMENT_ID: string;
   export const BASE_URL: string;
 }
+
+declare module 'react-native-push-notification';
+declare module '@react-native-community/push-notification-ios';

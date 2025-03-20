@@ -12,6 +12,7 @@ import SubmitButton from 'src/components/ui/Button/SubmitButton';
 import Text from 'src/components/ui/Text/Text';
 import TextInput from 'src/components/ui/Text/TextInput';
 import View from 'src/components/ui/View/View';
+import {colors} from 'src/utils/colors';
 import {size} from 'src/utils/size';
 import useAuth from 'src/hooks/useAuth';
 import {yupResolver} from '@hookform/resolvers/yup';
@@ -78,7 +79,9 @@ const Login: FunctionComponent<Props> = () => {
           )}
           name="email"
         />
-        {errors.email && <Text color="danger">{errors.email.message}</Text>}
+        {errors.email && (
+          <Text color={colors.danger}>{errors.email.message}</Text>
+        )}
         <Controller
           control={control}
           render={({field: {onChange, onBlur, value}}) => (
@@ -92,12 +95,12 @@ const Login: FunctionComponent<Props> = () => {
           name="password"
         />
         {errors.password && (
-          <Text color="danger">{errors.password.message}</Text>
+          <Text color={colors.danger}>{errors.password.message}</Text>
         )}
         <SubmitButton
           text="Login"
           onPress={handleSubmit(onSubmit)}
-          textColor="secondary"
+          textColor={colors.secondary}
           backgroundColor="blue"
           isLoading={isEmailAndPasswordSignInLoading}
           disabled={!isValid}
@@ -105,7 +108,7 @@ const Login: FunctionComponent<Props> = () => {
         <SubmitButton
           text="Sign up with google"
           onPress={googleSignIn}
-          textColor="secondary"
+          textColor={colors.secondary}
           backgroundColor="primary"
           leftIcon={<GoogleIcon style={styles.iconStyle} />}
           isLoading={isGoogleSignInLoading}

@@ -14,8 +14,8 @@ const COLORS = colors;
 interface Props extends TouchableOpacityProps {
   text: string;
   onPress: () => void;
-  backgroundColor?: keyof typeof COLORS;
-  textColor?: keyof typeof COLORS;
+  backgroundColor?: string;
+  textColor?: string;
   textSize?: number;
   leftIcon?: ReactNode;
   rightIcon?: ReactNode;
@@ -40,7 +40,11 @@ const SubmitButton: React.FC<Props> = ({
       styles.button,
       {
         backgroundColor:
-          COLORS[isLoading || disabled ? 'disabled' : backgroundColor],
+          COLORS[
+            isLoading || disabled
+              ? 'disabled'
+              : (backgroundColor as keyof typeof COLORS)
+          ],
       },
     ],
     [backgroundColor, isLoading, disabled],
@@ -58,7 +62,7 @@ const SubmitButton: React.FC<Props> = ({
       ) : (
         <>
           {leftIcon}
-          <Text color={textColor ?? 'white'} size={textSize}>
+          <Text color={textColor ?? colors.secondary} size={textSize}>
             {text}
           </Text>
           {rightIcon}

@@ -2,7 +2,6 @@ import {ActivityIndicator, Image, ScrollView, StyleSheet} from 'react-native';
 import React, {FunctionComponent} from 'react';
 
 import {AppStackParamList} from '@src/navigation/types/AppStackParamList';
-import {MoveLeft} from 'lucide-react-native';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import ScreenWrapper from 'src/components/container/ScreenWrapper';
 import Text from 'src/components/ui/Text/Text';
@@ -13,7 +12,7 @@ import {useQuery} from '@tanstack/react-query';
 
 type Props = NativeStackScreenProps<AppStackParamList, 'PokemonDetails'>;
 
-const PokemonDetails: FunctionComponent<Props> = ({navigation, route}) => {
+const PokemonDetails: FunctionComponent<Props> = ({route}) => {
   const {pokemon} = route.params;
 
   const {data, isLoading, error} = useQuery({
@@ -41,8 +40,7 @@ const PokemonDetails: FunctionComponent<Props> = ({navigation, route}) => {
   }
 
   return (
-    <ScreenWrapper>
-      <MoveLeft color={colors.blue} onPress={() => navigation.goBack()} />
+    <ScreenWrapper goBack>
       <View style={styles.container}>
         {/* Pokémon Name */}
         <Text style={styles.title}>{pokemon.name.toUpperCase()}</Text>

@@ -18,12 +18,12 @@ const View: React.FC<Props> = ({style, row, column, ...props}) => {
 
 const styles = StyleSheet.create({
   row: {
-    justifyContent: 'center',
+    justifyContent: 'space-between',
     alignItems: 'center',
     flexDirection: 'row',
   },
   column: {
-    justifyContent: 'center',
+    justifyContent: 'space-between',
     alignItems: 'center',
     flexDirection: 'column',
   },

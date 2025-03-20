@@ -9,6 +9,8 @@ import {GestureHandlerRootView} from 'react-native-gesture-handler';
 import {PaperProvider} from 'react-native-paper';
 import React from 'react';
 import RootNavigator from 'src/navigation/RootNavigator';
+import Toast from 'react-native-toast-message';
+import toastConfig from 'src/utils/toastConfig';
 
 function App(): React.JSX.Element {
   const isDarkMode = useColorScheme() === 'dark';
@@ -29,6 +31,7 @@ function App(): React.JSX.Element {
               backgroundColor={backgroundStyle.backgroundColor}
             />
             <RootNavigator />
+            <Toast config={toastConfig} />
           </View>
         </PaperProvider>
       </QueryClientProvider>
