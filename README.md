@@ -62,36 +62,43 @@ If everything is set up correctly, you should see your new app running in the An
 
 This is one way to run your app — you can also build it directly from Android Studio or Xcode.
 
-## Step 3: Modify your app
-
-Now that you have successfully run the app, let's make changes!
-
-Open `App.tsx` in your text editor of choice and make some changes. When you save, your app will automatically update and reflect these changes — this is powered by [Fast Refresh](https://reactnative.dev/docs/fast-refresh).
-
-When you want to forcefully reload, for example to reset the state of your app, you can perform a full reload:
 
 - **Android**: Press the <kbd>R</kbd> key twice or select **"Reload"** from the **Dev Menu**, accessed via <kbd>Ctrl</kbd> + <kbd>M</kbd> (Windows/Linux) or <kbd>Cmd ⌘</kbd> + <kbd>M</kbd> (macOS).
 - **iOS**: Press <kbd>R</kbd> in iOS Simulator.
 
 ## Congratulations! :tada:
 
-You've successfully run and modified your React Native App. :partying_face:
-
-### Now what?
-
-- If you want to add this new React Native code to an existing application, check out the [Integration guide](https://reactnative.dev/docs/integration-with-existing-apps).
-- If you're curious to learn more about React Native, check out the [docs](https://reactnative.dev/docs/getting-started).
+You've successfully run your React Native App. :partying_face:
 
 # Troubleshooting
 
 If you're having issues getting the above steps to work, see the [Troubleshooting](https://reactnative.dev/docs/troubleshooting) page.
 
-# Learn More
+# How to use project
+You can sign up with the `sign up with google` button using your email or you can use input a valid `email` and `password` into the email and password fields respectively.
 
-To learn more about React Native, take a look at the following resources:
+If you don't already have an account, a new account will be created for you. If you don't want to create a new account you can use the login details:
 
-- [React Native Website](https://reactnative.dev) - learn more about React Native.
-- [Getting Started](https://reactnative.dev/docs/environment-setup) - an **overview** of React Native and how setup your environment.
-- [Learn the Basics](https://reactnative.dev/docs/getting-started) - a **guided tour** of the React Native **basics**.
-- [Blog](https://reactnative.dev/blog) - read the latest official React Native **Blog** posts.
-- [`@facebook/react-native`](https://github.com/facebook/react-native) - the Open Source; GitHub **repository** for React Native.
+```
+email: testemail@gmail.com
+password: password
+```
+
+This project contains push notifications setup from `react-native-push-notification`, however, notifications are only received on android. Reason being that IOS requires a paid apple developer account which I don't have access to at the moment. 
+
+The push notification works on background, foreground, and when the app is cleared from history. Push notifications can be sent via firebase console.
+
+Push notifications with additional object like pokemon name and url, when clicked opens PokemonDetails screen.
+
+A pokemon can be caught and released from the home-screen. All caught pokemons can also be viewed from the Profile screen.
+
+**Pokemon animation**
+long-pressing a pokemon in the caught Pokemons screen moves the pokemon to the right by 20px; when it is at the end of the screen, the pokemon item resumes at the beginning of the screen.
+
+**Home screen**
+Pressing each pokemon on the homes screen opens a bottomsheet containing brief information of a pokemon.
+
+Catch Pokemon button adds a pokemon to the global caught pokemon list.
+
+View Pokemon button opens the pokemon details screen.
+
