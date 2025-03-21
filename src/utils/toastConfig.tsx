@@ -10,7 +10,7 @@ import {size} from './size';
 
 const toastConfig: ToastConfig | undefined = {
   genericToast: ({text1, text2}) => (
-    <View style={styles.genericToastContainer}>
+    <View style={[styles.toastContainer, {backgroundColor: colors.blue}]}>
       <View row>
         <Bell size={20} color={colors.secondary} />
         <Text style={styles.text1}>{text1}</Text>
@@ -19,7 +19,7 @@ const toastConfig: ToastConfig | undefined = {
     </View>
   ),
   error: ({text1, text2}) => (
-    <View style={styles.genericToastContainer}>
+    <View style={[styles.toastContainer, {backgroundColor: colors.danger}]}>
       <View row>
         <CircleAlert size={20} color={colors.secondary} />
         <Text style={styles.text1}>{text1}</Text>
@@ -30,13 +30,13 @@ const toastConfig: ToastConfig | undefined = {
 };
 
 const styles = StyleSheet.create({
-  genericToastContainer: {
+  toastContainer: {
     width: '90%',
     backgroundColor: colors.blue,
     alignItems: 'flex-start',
     padding: 10,
     borderRadius: 10,
-    height: 70,
+    height: 80,
   },
   text1: {
     color: colors.secondary,
@@ -48,12 +48,6 @@ const styles = StyleSheet.create({
     color: colors.secondary,
     fontSize: size.XS,
     marginTop: 5,
-  },
-  errorToastContainer: {
-    width: '90%',
-    backgroundColor: colors.danger,
-    alignItems: 'flex-start',
-    padding: 10,
   },
 });
 
