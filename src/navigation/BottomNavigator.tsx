@@ -46,8 +46,8 @@ const BottomTab = () => {
           fontSize: AppSize.XS,
           fontFamily: 'Figtree-Regular',
         },
-        tabBarActiveTintColor: 'blue', // Active tab color
-        tabBarInactiveTintColor: 'gray', // Inactive tab color
+        tabBarActiveTintColor: 'blue',
+        tabBarInactiveTintColor: 'gray',
       })}>
       <Tab.Screen
         options={{headerShown: false}}
