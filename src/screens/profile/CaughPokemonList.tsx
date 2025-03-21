@@ -83,12 +83,12 @@ const RenderItem: FunctionComponent<{item: PokemonType}> = ({item}) => {
           style={{transform: [{translateX: translateX}]}}
           entering={FadeIn}>
           <View style={styles.itemContent}>
-            {item?.url && (
+            {item?.url ? (
               <Image
                 source={{uri: getPokemonImage(item)}}
                 style={styles.image}
               />
-            )}
+            ) : null}
             <Text>{item?.name}</Text>
           </View>
         </Animated.View>

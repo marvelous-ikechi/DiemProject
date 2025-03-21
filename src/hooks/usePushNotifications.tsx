@@ -6,6 +6,7 @@ import notifee, {AndroidImportance} from '@notifee/react-native';
 import {useCallback, useEffect} from 'react';
 
 import {AppStackParamList} from '@src/navigation/types/AppStackParamList';
+import {PokemonType} from 'src/types/appTypes';
 import PushNotification from 'react-native-push-notification';
 import PushNotificationIOS from '@react-native-community/push-notification-ios';
 import {StackNavigationProp} from '@react-navigation/stack';
@@ -30,11 +31,14 @@ messaging().setBackgroundMessageHandler(async remoteMessage => {
 
 const usePushNotifications = () => {
   const navigation = useNavigation<Props>();
-
-  // Request permission for notifications
+  //  Request permission for notifications
   const requestPermission = async () => {
     try {
       if (Platform.OS === 'ios') {
+        const authStatus = await messaging().hasPermission();
+        if (authStatus === messaging.AuthorizationStatus.AUTHORIZED) {
+          return;
+        }
         await messaging().requestPermission();
       } else if (Platform.OS === 'android') {
         const currentStatus = await PermissionsAndroid.check(
@@ -44,11 +48,9 @@ const usePushNotifications = () => {
         if (currentStatus) {
           return;
         }
-
         const granted = await PermissionsAndroid.request(
           PermissionsAndroid.PERMISSIONS.POST_NOTIFICATIONS,
         );
-
         const permissionGranted =
           granted === PermissionsAndroid.RESULTS.GRANTED;
 
@@ -56,8 +58,8 @@ const usePushNotifications = () => {
           type: permissionGranted ? 'genericToast' : 'error',
           text1: 'Notification permission',
           text2: permissionGranted
-            ? 'Notification permission granted (Android)'
-            : 'Notification permission denied (Android)',
+            ? ' Notification permission granted (Android)'
+            : ' Notification permission denied (Android)',
         });
       }
     } catch (error) {
@@ -95,15 +97,23 @@ const usePushNotifications = () => {
     });
   };
 
-  // Handle notification navigation
   const handleNotificationNavigation = useCallback(
-    (message: any) => {
-      if (message) {
+    (message: PokemonType) => {
+      if (message?.url) {
         navigation.navigate('PokemonDetails', {pokemon: message});
+      } else {
+        navigation.navigate('BottomTab');
       }
     },
     [navigation],
   );
+
+  // handle Background n
+  notifee.onBackgroundEvent(async event => {
+    handleNotificationNavigation(
+      event?.detail?.notification?.data as PokemonType,
+    );
+  });
 
   // Create a notification channel
   const createNotificationChannel = async () => {
@@ -111,12 +121,18 @@ const usePushNotifications = () => {
       id: 'pokemon-channel',
       name: 'Pokemon Channel',
       importance: AndroidImportance.HIGH,
-      description: 'A channel for pokemon notifications',
-      vibration: true,
+    });
+
+    PushNotification.createChannel({
+      channelId: 'pokemon-channel',
+      channelName: 'Pokemon Channel',
+      channelDescription: 'A channel for pokemon notifications',
+      importance: 4,
+      vibrate: true,
     });
   };
 
-  // Initialize Firebase
+  // Initialize Firebase and permissions
   const initializeFirebase = async () => {
     try {
       await messaging().getToken();
@@ -129,48 +145,52 @@ const usePushNotifications = () => {
   // Configure push notifications
   const configurePushNotifications = () => {
     PushNotification.configure({
-      onNotification: async (notification: any) => {
-        await notifee.displayNotification({
+      onNotification: function (notification: any) {
+        // Display local notification for foreground messages
+        PushNotification.localNotification({
+          channelId: 'pokemon-channel',
           title: notification.title,
-          body: notification.message,
-          android: {channelId: 'pokemon-channel'},
+          message: notification.message,
         });
 
-        if (Platform.OS === 'ios') {
-          notification.finish(PushNotificationIOS.FetchResult.NoData);
-        }
+        notification.finish(PushNotificationIOS.FetchResult.NoData);
       },
-      onRegistrationError: (err: any) => {
+      onRegistrationError: function (err: any) {
         console.error('Push Notification Registration Error:', err);
       },
-      permissions: {alert: true, badge: true, sound: true},
+      permissions: {
+        alert: true,
+        badge: true,
+        sound: true,
+      },
       popInitialNotification: true,
-      requestPermissions: Platform.OS === 'ios',
+      requestPermissions: false,
     });
   };
+
+  notifee.onBackgroundEvent(async event => {
+    handleNotificationNavigation(
+      event?.detail?.notification?.data as PokemonType,
+    );
+  });
 
   useEffect(() => {
     createNotificationChannel();
     configurePushNotifications();
     getToken();
+    messaging().onMessage(onMessageReceived);
+    messaging().onNotificationOpenedApp(remoteMessage => {
+      handleNotificationNavigation(remoteMessage as unknown as PokemonType);
+    });
 
-    const unsubscribeOnMessage = messaging().onMessage(onMessageReceived);
-    const unsubscribeOnOpen = messaging().onNotificationOpenedApp(
-      handleNotificationNavigation,
-    );
-
+    // Handle app opened from quit state
     messaging()
       .getInitialNotification()
       .then(remoteMessage => {
         if (remoteMessage) {
-          handleNotificationNavigation(remoteMessage);
+          handleNotificationNavigation(remoteMessage as unknown as PokemonType);
         }
       });
-
-    return () => {
-      unsubscribeOnMessage();
-      unsubscribeOnOpen();
-    };
   }, [handleNotificationNavigation]);
 
   return {configurePushNotifications, initializeFirebase};
