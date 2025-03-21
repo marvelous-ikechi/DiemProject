@@ -236,7 +236,7 @@ const HomeScreen: FunctionComponent = () => {
                 <View
                   style={styles.abilityContainer}
                   key={ability.ability.name}>
-                  <Text color="secondary">{ability.ability.name}</Text>
+                  <Text color={colors.secondary}>{ability.ability.name}</Text>
                 </View>
               ))}
             </View>
