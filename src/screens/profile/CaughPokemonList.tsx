@@ -40,9 +40,10 @@ const CaughtPokemonList: FunctionComponent<Props> = () => {
         keyExtractor={item => item?.name}
         style={styles.container}
         showsVerticalScrollIndicator={false}
+        contentContainerStyle={styles.contentContainer}
         ListEmptyComponent={
           <View style={styles.emptyContainer}>
-            <Text color="blue" style={styles.emptyText}>
+            <Text color={colors.disabled} style={styles.emptyText}>
               No caught pokemons yet.
             </Text>
           </View>
@@ -131,7 +132,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   emptyContainer: {
-    flex: 1,
+    flexGrow: 1,
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -139,6 +140,9 @@ const styles = StyleSheet.create({
     position: 'absolute',
     right: 0,
     top: 10,
+  },
+  contentContainer: {
+    flexGrow: 1,
   },
 });
 

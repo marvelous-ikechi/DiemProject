@@ -15,17 +15,19 @@ interface Props {
   children: ReactNode;
   center?: boolean;
   goBack?: boolean;
+  testID?: string;
 }
 
 const ScreenWrapper: FunctionComponent<Props> = ({
   center,
   children,
   goBack,
+  testID,
 }) => {
   const navigation = useNavigation();
   return (
     <SafeAreaView style={styles.safeArea}>
-      <View style={[styles.container, center && styles.center]}>
+      <View style={[styles.container, center && styles.center]} testID={testID}>
         {goBack && (
           <TouchableOpacity onPress={() => navigation.goBack()}>
             <MoveLeft size={24} color={colors.blue} />

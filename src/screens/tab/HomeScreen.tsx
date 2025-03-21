@@ -20,6 +20,7 @@ import {useInfiniteQuery, useQueryClient} from '@tanstack/react-query';
 import {AppStackParamList} from 'src/navigation/types/AppStackParamList';
 import {BottomSheetMethods} from '@gorhom/bottom-sheet/lib/typescript/types';
 import CustomBottomSheet from 'src/components/ui/BottomSheet/BottomSheet';
+import ErrorScreen from 'src/components/container/ErrorScreen';
 import {PokemonType} from 'src/types/appTypes';
 import ScreenWrapper from 'src/components/container/ScreenWrapper';
 import {StackNavigationProp} from '@react-navigation/stack';
@@ -105,16 +106,23 @@ const HomeScreen: FunctionComponent = () => {
     }
   };
 
-  const {data, isFetchingNextPage, fetchNextPage, hasNextPage} =
-    useInfiniteQuery({
-      queryKey: ['pokemon'],
-      initialPageParam: 'https://pokeapi.co/api/v2/pokemon?limit=10&offset=0',
-      queryFn: async ({pageParam}) => {
-        const response = await apiClient.get(pageParam);
-        return response.data ?? [];
-      },
-      getNextPageParam: lastPage => lastPage?.next ?? undefined,
-    });
+  const {
+    data,
+    isFetchingNextPage,
+    fetchNextPage,
+    hasNextPage,
+    isLoading,
+    error,
+    refetch,
+  } = useInfiniteQuery({
+    queryKey: ['pokemon'],
+    initialPageParam: 'https://pokeapi.co/api/v2/pokemon?limit=10&offset=0',
+    queryFn: async ({pageParam}) => {
+      const response = await apiClient.get(pageParam);
+      return response.data ?? [];
+    },
+    getNextPageParam: lastPage => lastPage?.next ?? undefined,
+  });
 
   const pokemonList = useMemo(
     () => data?.pages?.flatMap(page => page.results) ?? [],
@@ -131,32 +139,51 @@ const HomeScreen: FunctionComponent = () => {
         <SubmitButton
           text="Catch Pokemon"
           onPress={() => catchPokemon(item)}
-          textColor="secondary"
+          textColor={colors.secondary}
           style={styles.button}
           textSize={size.XS}
+          testID="catch-pokemon-button"
           rightIcon={<CirclePlus color={colors.secondary} size={20} />}
         />
         <SubmitButton
           text="View Pokemon"
           onPress={() => navigation.navigate('PokemonDetails', {pokemon: item})}
-          textColor="secondary"
+          textColor={colors.secondary}
           style={styles.button}
           textSize={size.XS}
           rightIcon={<Eye color={colors.secondary} size={20} />}
+          testID="view-pokemon-button"
         />
       </View>
     </TouchableOpacity>
   );
 
+  if (error) {
+    return (
+      <ScreenWrapper>
+        <ErrorScreen error={error.message} onRetry={refetch} />
+      </ScreenWrapper>
+    );
+  }
+
   return (
-    <ScreenWrapper>
+    <ScreenWrapper testID="home-screen">
       <FlatList
         data={pokemonList}
         renderItem={renderItem}
         keyExtractor={item => item.name}
         onEndReached={() => hasNextPage && fetchNextPage()}
         onEndReachedThreshold={0.5}
-        ListEmptyComponent={<Text>No Pokémon found</Text>}
+        contentContainerStyle={styles.listContainer}
+        ListEmptyComponent={
+          <View style={styles.emptyListComponent}>
+            {isLoading ? (
+              <ActivityIndicator size={'large'} color={colors.blue} />
+            ) : (
+              <Text>No Pokémon found</Text>
+            )}
+          </View>
+        }
         ListFooterComponent={
           isFetchingNextPage ? (
             <ActivityIndicator
@@ -302,6 +329,14 @@ const styles = StyleSheet.create({
   },
   activityIndicator: {
     marginTop: 40,
+  },
+  emptyListComponent: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  listContainer: {
+    flexGrow: 1,
   },
 });
 
