@@ -7,6 +7,7 @@ import {useEffect, useState} from 'react';
 
 import {AuthStackParamList} from '@src/navigation/types/AuthStackParamList';
 import {GoogleSignin} from '@react-native-google-signin/google-signin';
+import Toast from 'react-native-toast-message';
 import {UserType} from 'src/types/appTypes';
 import auth from '@react-native-firebase/auth';
 import useStore from 'src/store/store';
@@ -36,7 +37,11 @@ const useAuth = () => {
 
       navigation.navigate('BottomTab', {screen: 'Home'});
     } catch (error) {
-      console.error('Google Sign-In Error:', error);
+      Toast.show({
+        type: 'error',
+        text1: 'Google Sign-In Error',
+        text2: error instanceof Error ? error.message : 'An Error occurred',
+      });
     } finally {
       setIsGoogleSignInLoading(false);
     }
@@ -67,10 +72,21 @@ const useAuth = () => {
           navigation.navigate('BottomTab', {screen: 'Home'});
           addUser(userCredential.user as unknown as UserType);
         } catch (signUpError: any) {
-          console.error('Signup Error:', signUpError.code);
+          Toast.show({
+            type: 'error',
+            text1: 'Signup Error',
+            text2:
+              signUpError instanceof Error
+                ? signUpError.message
+                : 'An Error occurred',
+          });
         }
       } else {
-        console.error('Firebase Auth Error:', error.code);
+        Toast.show({
+          type: 'error',
+          text1: 'Firebase Auth Error',
+          text2: error instanceof Error ? error.message : 'An Error occurred',
+        });
       }
     } finally {
       setIsEmailAndPasswordSignInLoading(false);
