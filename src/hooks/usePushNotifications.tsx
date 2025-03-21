@@ -76,8 +76,7 @@ const usePushNotifications = () => {
   const getToken = async () => {
     try {
       await messaging().registerDeviceForRemoteMessages();
-      const token = await messaging().getToken();
-      console.log('FCM Token:', token);
+      await messaging().getToken();
     } catch (error) {
       console.error('Failed to get token:', error);
     }
