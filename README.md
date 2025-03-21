@@ -102,3 +102,5 @@ Catch Pokemon button adds a pokemon to the global caught pokemon list.
 
 View Pokemon button opens the pokemon details screen.
 
+# Loom Video
+https://www.loom.com/share/aa0168a6ceed46efa976f24c526a15ef?sid=123925f8-39db-4c00-805a-f36346b3eaf5
