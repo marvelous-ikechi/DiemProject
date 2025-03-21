@@ -30,16 +30,12 @@ messaging().setBackgroundMessageHandler(async remoteMessage => {
 
 const usePushNotifications = () => {
   const navigation = useNavigation<Props>();
-  //  Request permission for notifications
+
+  // Request permission for notifications
   const requestPermission = async () => {
     try {
       if (Platform.OS === 'ios') {
-        const authStatus = await messaging().hasPermission();
-        if (authStatus === messaging.AuthorizationStatus.AUTHORIZED) {
-          return;
-        }
-        const newAuthStatus = await messaging().requestPermission();
-        console.log('Authorization status (iOS):', newAuthStatus);
+        await messaging().requestPermission();
       } else if (Platform.OS === 'android') {
         const currentStatus = await PermissionsAndroid.check(
           PermissionsAndroid.PERMISSIONS.POST_NOTIFICATIONS,
@@ -48,9 +44,11 @@ const usePushNotifications = () => {
         if (currentStatus) {
           return;
         }
+
         const granted = await PermissionsAndroid.request(
           PermissionsAndroid.PERMISSIONS.POST_NOTIFICATIONS,
         );
+
         const permissionGranted =
           granted === PermissionsAndroid.RESULTS.GRANTED;
 
@@ -58,8 +56,8 @@ const usePushNotifications = () => {
           type: permissionGranted ? 'genericToast' : 'error',
           text1: 'Notification permission',
           text2: permissionGranted
-            ? ' Notification permission granted (Android)'
-            : ' Notification permission denied (Android)',
+            ? 'Notification permission granted (Android)'
+            : 'Notification permission denied (Android)',
         });
       }
     } catch (error) {
@@ -78,7 +76,8 @@ const usePushNotifications = () => {
   const getToken = async () => {
     try {
       await messaging().registerDeviceForRemoteMessages();
-      await messaging().getToken();
+      const token = await messaging().getToken();
+      console.log('FCM Token:', token);
     } catch (error) {
       console.error('Failed to get token:', error);
     }
@@ -97,18 +96,17 @@ const usePushNotifications = () => {
     });
   };
 
+  // Handle notification navigation
   const handleNotificationNavigation = useCallback(
     (message: any) => {
       if (message) {
-        navigation.navigate('PokemonDetails', {
-          pokemon: message,
-        });
+        navigation.navigate('PokemonDetails', {pokemon: message});
       }
     },
     [navigation],
   );
 
-  // Create a Notification Channel
+  // Create a notification channel
   const createNotificationChannel = async () => {
     await notifee.createChannel({
       id: 'pokemon-channel',
@@ -119,7 +117,7 @@ const usePushNotifications = () => {
     });
   };
 
-  // Initialize Firebase and permissions
+  // Initialize Firebase
   const initializeFirebase = async () => {
     try {
       await messaging().getToken();
@@ -132,42 +130,36 @@ const usePushNotifications = () => {
   // Configure push notifications
   const configurePushNotifications = () => {
     PushNotification.configure({
-      onNotification: function (notification: any) {
-        // Display local notification for foreground messages
-        notifee.displayNotification({
+      onNotification: async (notification: any) => {
+        await notifee.displayNotification({
           title: notification.title,
           body: notification.message,
-          id: 'pokemon-channel',
+          android: {channelId: 'pokemon-channel'},
         });
-        notification.finish(PushNotificationIOS.FetchResult.NoData);
+
+        if (Platform.OS === 'ios') {
+          notification.finish(PushNotificationIOS.FetchResult.NoData);
+        }
       },
-      onRegistrationError: function (err: any) {
+      onRegistrationError: (err: any) => {
         console.error('Push Notification Registration Error:', err);
       },
-      permissions: {
-        alert: true,
-        badge: true,
-        sound: true,
-      },
+      permissions: {alert: true, badge: true, sound: true},
       popInitialNotification: true,
-      requestPermissions: false,
+      requestPermissions: Platform.OS === 'ios',
     });
   };
-
-  notifee.onBackgroundEvent(async event => {
-    handleNotificationNavigation(event?.detail?.notification?.data);
-  });
 
   useEffect(() => {
     createNotificationChannel();
     configurePushNotifications();
     getToken();
-    messaging().onMessage(onMessageReceived);
-    messaging().onNotificationOpenedApp(remoteMessage => {
-      handleNotificationNavigation(remoteMessage);
-    });
 
-    // Handle app opened from quit state
+    const unsubscribeOnMessage = messaging().onMessage(onMessageReceived);
+    const unsubscribeOnOpen = messaging().onNotificationOpenedApp(
+      handleNotificationNavigation,
+    );
+
     messaging()
       .getInitialNotification()
       .then(remoteMessage => {
@@ -175,6 +167,11 @@ const usePushNotifications = () => {
           handleNotificationNavigation(remoteMessage);
         }
       });
+
+    return () => {
+      unsubscribeOnMessage();
+      unsubscribeOnOpen();
+    };
   }, [handleNotificationNavigation]);
 
   return {configurePushNotifications, initializeFirebase};
