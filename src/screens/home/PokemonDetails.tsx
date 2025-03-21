@@ -44,7 +44,7 @@ const PokemonDetails: FunctionComponent<Props> = ({route}) => {
     <ScreenWrapper goBack>
       <View style={styles.container}>
         {/* Pokémon Name */}
-        <Text style={styles.title}>{pokemon.name.toUpperCase()}</Text>
+        <Text style={styles.title}>{pokemon?.name?.toUpperCase()}</Text>
 
         {/* Pokémon Image */}
         <Image
@@ -80,8 +80,8 @@ const PokemonDetails: FunctionComponent<Props> = ({route}) => {
           <View style={styles.section}>
             <Text style={styles.subtitle}>Abilities:</Text>
             <Text>
-              {data.abilities
-                .map((abilityObj: any) => abilityObj.ability.name)
+              {data?.abilities
+                ?.map((abilityObj: any) => abilityObj.ability.name)
                 .join(', ')}
             </Text>
           </View>
@@ -89,7 +89,7 @@ const PokemonDetails: FunctionComponent<Props> = ({route}) => {
           {/* Stats */}
           <View style={styles.section}>
             <Text style={styles.subtitle}>Stats:</Text>
-            {data.stats.map((statObj: any) => (
+            {data?.stats?.map((statObj: any) => (
               <Text key={statObj.stat.name}>
                 {statObj.stat.name}: {statObj.base_stat}
               </Text>
