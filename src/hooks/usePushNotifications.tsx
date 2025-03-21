@@ -98,12 +98,19 @@ const usePushNotifications = () => {
   // Handle notification navigation
   const handleNotificationNavigation = useCallback(
     (message: any) => {
-      if (message) {
+      if (message?.url) {
         navigation.navigate('PokemonDetails', {pokemon: message});
+      } else {
+        navigation.navigate('BottomTab');
       }
     },
     [navigation],
   );
+
+  // handle Background notification
+  notifee.onBackgroundEvent(async event => {
+    handleNotificationNavigation(event?.detail?.notification?.data);
+  });
 
   // Create a notification channel
   const createNotificationChannel = async () => {
