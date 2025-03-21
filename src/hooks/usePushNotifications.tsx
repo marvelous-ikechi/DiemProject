@@ -6,6 +6,7 @@ import notifee, {AndroidImportance} from '@notifee/react-native';
 import {useCallback, useEffect} from 'react';
 
 import {AppStackParamList} from '@src/navigation/types/AppStackParamList';
+import {PokemonType} from '@src/types/appTypes';
 import PushNotification from 'react-native-push-notification';
 import PushNotificationIOS from '@react-native-community/push-notification-ios';
 import {StackNavigationProp} from '@react-navigation/stack';
@@ -97,7 +98,8 @@ const usePushNotifications = () => {
 
   // Handle notification navigation
   const handleNotificationNavigation = useCallback(
-    (message: any) => {
+    (message: PokemonType) => {
+      console.log('message', message);
       if (message?.url) {
         navigation.navigate('PokemonDetails', {pokemon: message});
       } else {
@@ -109,7 +111,9 @@ const usePushNotifications = () => {
 
   // handle Background notification
   notifee.onBackgroundEvent(async event => {
-    handleNotificationNavigation(event?.detail?.notification?.data);
+    handleNotificationNavigation(
+      event?.detail?.notification?.data as PokemonType,
+    );
   });
 
   // Create a notification channel
@@ -162,21 +166,9 @@ const usePushNotifications = () => {
     getToken();
 
     const unsubscribeOnMessage = messaging().onMessage(onMessageReceived);
-    const unsubscribeOnOpen = messaging().onNotificationOpenedApp(
-      handleNotificationNavigation,
-    );
-
-    messaging()
-      .getInitialNotification()
-      .then(remoteMessage => {
-        if (remoteMessage) {
-          handleNotificationNavigation(remoteMessage);
-        }
-      });
-
+    messaging().getInitialNotification();
     return () => {
       unsubscribeOnMessage();
-      unsubscribeOnOpen();
     };
   }, [handleNotificationNavigation]);
 
